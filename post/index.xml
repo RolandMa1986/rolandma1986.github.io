@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Thu, 22 Oct 2020 02:06:46 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 06 Nov 2020 08:42:33 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes Issue 归类指南</title>
+      <link>/post/issue-triage/</link>
+      <pubDate>Fri, 06 Nov 2020 08:42:33 +0000</pubDate>
+      
+      <guid>/post/issue-triage/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;Issue 管理是软件工程中重要的一个环节。项目管理者可以通过 issue 对项目做持续的追踪，复审，把握整体的质量和进度。同时及时发现风险和问题。在开源软管理过程中，issue 的追踪变得更为棘手，来自全世界开发者的 issue 会源源不断的进入 issue 管理系统中。因此更需要一个高效的管理流程及工具。&lt;/p&gt;
+&lt;/blockquote&gt;</description>
+    </item>
     
     <item>
       <title>基于 KubeSphere 的 Spring Could 微服务 CI/CD 实践</title>
