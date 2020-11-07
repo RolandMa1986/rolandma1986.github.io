@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>基于Ubuntu18.04的云原生应用开发环境搭建VSCode&amp;Golang &middot; Roland&#39;s Blog</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+	</head>
+
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Roland&#39;s Blog</h2>
+				</a>
+				<ul>
+    
+    
+</ul>
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-09-22 01:42:38 &#43;0000 UTC">September 22, 2020</time>
+</div>
+
+		<h1 class="post-title">基于Ubuntu18.04的云原生应用开发环境搭建VSCode&amp;Golang</h1>
+<div class="post-line"></div>
+
+		
+
+		<h2 id="前提条件">前提条件</h2>
+<p>已安装Ubuntu18.04桌面版</p>
+<h2 id="golang-安装">Golang 安装</h2>
+<ol>
+<li>下载GO安装包</li>
+</ol>
+<p>国内用户可以使用Google的中国区镜像站点https://golang.google.cn下载最新的golang安装包。这里我们选用基于linux的64位发行版。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget https://golang.google.cn/dl/go1.14.9.linux-amd64.tar.gz
+</code></pre></div><ol start="2">
+<li>解压tar包到用户目录</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo tar -C /usr/local -xzf go1.14.7.linux-amd64.tar.gz
+</code></pre></div><ol start="3">
+<li>设置Path环境变量,并使其生效</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># Go</span> 
+echo <span style="color:#e6db74">&#34;export PATH=</span>$PATH<span style="color:#e6db74">:/usr/local/go/bin&#34;</span> &gt;&gt; ~/.profile
+source ~/.profile
+</code></pre></div><p>4 测试Go是否安装成功</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go version
+</code></pre></div><ol start="5">
+<li>设置 GoProxy
+使用go get安装go依赖包依赖于golang.org网络，国内用户可以使用goproxy设置镜像加速。对于Go1.13以上版本执行以下命令:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go env -w GO111MODULE<span style="color:#f92672">=</span>on
+go env -w GOPROXY<span style="color:#f92672">=</span>https://goproxy.cn,direct
+</code></pre></div><blockquote>
+<p>ref <a href="https://goproxy.cn/">https://goproxy.cn/</a></p>
+</blockquote>
+<ol start="6">
+<li>GOPATH</li>
+</ol>
+<p>GOPATH为可选配置，根据个人需求进行配置。</p>
+<h2 id="vscode-开发环境">VScode 开发环境</h2>
+<ol>
+<li>下载 vscode</li>
+</ol>
+<p>进入<a href="https://code.visualstudio.com/">Vscode官网</a>，并选择deb格式安装包：
+<a href="https://code.visualstudio.com/">https://code.visualstudio.com/</a></p>
+<ol start="2">
+<li>安装Go plugin</li>
+</ol>
+<p>安装成功后选择扩展按钮或Ctrl+Shift+X进入扩展面板，输入<code>Go</code>搜索并安装Go插件。</p>
+<ol start="3">
+<li>激活Go扩展</li>
+</ol>
+<p>打开任意包含Go源码的目录就可以激活Go插件,或按Ctrl+Shift+P 打开命令，输入<code>Go: Install/Update Tools</code>安装Go需要的插件。</p>
+<ol start="4">
+<li>设置最大文件检查数量
+打开包含大量文件的工程时需要设置linux的最大文件监控数量。</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo nano /etc/sysctl.conf
+<span style="color:#75715e">#增加到最后一行</span>
+fs.inotify.max_user_watches<span style="color:#f92672">=</span><span style="color:#ae81ff">524288</span>
+
+$sudo sysctl -p
+</code></pre></div>
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/post/spring-cloud-on-kubeshpere/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			
+			<span>
+			&copy; <time datetime="2020-11-07 02:34:47.817854132 &#43;0000 UTC m=&#43;0.117791277">2020</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>
