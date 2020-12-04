@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Thu, 19 Nov 2020 09:30:43 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 04 Dec 2020 00:37:34 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes RBAC - 证书认证</title>
+      <link>/post/kubernetes-rbac-certificates/</link>
+      <pubDate>Fri, 04 Dec 2020 00:37:34 +0000</pubDate>
+      
+      <guid>/post/kubernetes-rbac-certificates/</guid>
+      <description>X509 客户证书 一般 Kubernetes 集群都会启用基于客户证书的用户认证模式。 API Server 通过 --client-ca-file=SOMEFILE 选项配置 CA 证书用于客户证书认证。如果提供的证书被验证通过，则 subject 中的公共名称（Common Name）就被作为请求的用户名。 通常可以使用两种方式签发：
+ 通过 CertificateSigningRequest 资源类型允许客户申请签名 X.509 证书 使用外部证书服务颁发证书，如 openssl  通过 CSR API 签发证书步骤：  生成用户私钥：  openssl genrsa -out user2.key 2048 使用私钥生成证书签名请求 CSR:  openssl req -new -key user2.key -out user2.csr -subj &amp;#34;/CN=user2/O=group1/O=group2&amp;#34;  如果遇到错误信息 Can&#39;t load /home/ubuntu/.</description>
+    </item>
     
     <item>
       <title>CKA 实战 第二章 安装与升级</title>
