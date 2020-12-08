@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Fri, 04 Dec 2020 00:37:34 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 08 Dec 2020 03:38:37 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes - &#39;No Podsandbox Found with Id&#39; 导致 Kubelet 启动失败分析过程总结</title>
+      <link>/post/kubernetes-no-podsandbox-found/</link>
+      <pubDate>Tue, 08 Dec 2020 03:38:37 +0000</pubDate>
+      
+      <guid>/post/kubernetes-no-podsandbox-found/</guid>
+      <description>&lt;p&gt;某线上客户反应 Kubernetes 集群中一节点显示为 &amp;ldquo;NotReady&amp;rdquo; 状态，重启 Kubelet 后任然无法恢复。由于无法连接环境，只能拿到少量相关日志信息，因此尝试本地重现。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Kubernetes RBAC - 证书认证</title>
