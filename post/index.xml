@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Mon, 28 Dec 2020 20:34:37 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 30 Dec 2020 20:46:17 +0800</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kiosk 多租户扩展-基本概念</title>
+      <link>/post/kubernetes-multi-tenancy-kiosk/</link>
+      <pubDate>Wed, 30 Dec 2020 20:46:17 +0800</pubDate>
+      
+      <guid>/post/kubernetes-multi-tenancy-kiosk/</guid>
+      <description>Kubernetes 多租户扩展  使用 Accounts 与 Account User 在共享的 Kubernetes 集群中区分租户 租户自助 Namespace 空间配置 Account Limits 账户配额保障服务质量与公平性 Namespace Templates 命名空间模板保证租户隔离与自助初始化 Namespace。 *多集群租户管理以共享集群池  Why kiosk Kubernetes 被设计为一个单租户平台，因此在单集群上实现多租户功能变得十分困难。然而，共享一个集群有很多优势，例如，资源利用率高，管理配置成本低，也可使租户更容易共享集群内部资源。
+当然，创建多租户 Kubernetes 集群的方法有很多，许多 Kubernetes 发行版也提出了他们自己的租户逻辑，然而却没有一个种轻量级的，可热拔插，并可定制化的解决方案。使管理员可以在任何标准的 Kubernetes 集群之上增加多租户能力。
+kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即用：可轻而易举地在任何已有集群中安装，适用于多种不同的场景 快速：着重于租户的自动化与自助服务 安全：为不同级别的租户隔离提供默认配置 可扩展：providing building blocks for higher-level Kubernetes platforms  架构 kiosk 的核心理念是使用 Kubernetes Namespace 作为隔离的工作空间，租户的应用可以运行在彼此隔离的空间中。为了降低管理成本，集群管理员应该配置 kiosk，然后它将成为一个租户可以在 Kubernetes 中自助配置 Namespace 的系统。</description>
+    </item>
     
     <item>
       <title>Kubernetes 层级命名空间 HNC - 3 Why</title>
@@ -91,6 +102,26 @@ Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm 
       
       <guid>/post/vscode-golang/</guid>
       <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/post/debug/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/post/debug/</guid>
+      <description>可以使用 kill -USR1 命令发送 USR1 信号给 docker daemon，而 docker daemon 收到信号之后，会把所有线程调用栈输出到 /var/run/docker 文件夹里。
+与 docker daemon 类似，我们可以通过 kill -SIGUSR1 命令来输出 containerd 的调用栈。不同的是，这次调用栈会直接输出到 messages 日志。</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/post/pleg-is-not-healthy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/post/pleg-is-not-healthy/</guid>
+      <description>根本原因是systemd的一个bug导致，在故障节点执行systemctl daemon-reexec可解决。
+根本解决需要升级systemd，升级后需要重启系统。</description>
     </item>
     
   </channel>
