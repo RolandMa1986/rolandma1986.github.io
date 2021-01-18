@@ -41,16 +41,15 @@
 
 	<div class="catalogue">
 		
-			<a href="/post/kubernetes-multi-tenancy-kiosk/" class="catalogue-item">
+			<a href="/post/kubernetes-debug-kubernetes-source-code/" class="catalogue-item">
     <div>
-        <time datetime="2020-12-30 20:46:17 &#43;0800 CST" class="catalogue-time">December 30, 2020</time>
-        <h1 class="catalogue-title">Kiosk 多租户扩展-基本概念</h1>
+        <time datetime="2021-01-17 12:41:52 &#43;0000 UTC" class="catalogue-time">January 17, 2021</time>
+        <h1 class="catalogue-title">Kubernetes 源码调试</h1>
         <div class="catalogue-line"></div>
 
         <p>
-            Kubernetes 多租户扩展  使用 Accounts 与 Account User 在共享的 Kubernetes 集群中区分租户 租户自助 Namespace 空间配置 Account Limits 账户配额保障服务质量与公平性 Namespace Templates 命名空间模板保证租户隔离与自助初始化 Namespace。 *多集群租户管理以共享集群池  Why kiosk Kubernetes 被设计为一个单租户平台，因此在单集群上实现多租户功能变得十分困难。然而，共享一个集群有很多优势，例如，资源利用率高，管理配置成本低，也可使租户更容易共享集群内部资源。
-当然，创建多租户 Kubernetes 集群的方法有很多，许多 Kubernetes 发行版也提出了他们自己的租户逻辑，然而却没有一个种轻量级的，可热拔插，并可定制化的解决方案。使管理员可以在任何标准的 Kubernetes 集群之上增加多租户能力。
-kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即用：可轻而易举地在任何已有集群中安装，适用于多种不同的场景 快速：着重于租户的自动化与自助服务 安全：为不同级别的租户隔离提供默认配置 可扩展：providing building blocks for higher-level Kubernetes platforms  架构 kiosk 的核心理念是使用 Kubernetes Namespace 作为隔离的工作空间，租户的应用可以运行在彼此隔离的空间中。为了降低管理成本，集群管理员应该配置 kiosk，然后它将成为一个租户可以在 Kubernetes 中自助配置 Namespace 的系统。
+            前言 本文提供了一种基于 vscode 和 minikube 的快速搭建 Kubernetes 开发调试环境的方法。通过 devle 对 Kubernetes 各个组件进行远程调试。调试代码可以帮助你更深入地理解 Kubernetes 逻辑，更清晰的分析代码执行流程。
+准备阶段  Clone kubernetes 源代码 参考官方文档，将 Kubernetes clone 到默认 $GOPATH (Ubuntu 默认路径: ~/go)下  mkdir -p $GOPATH/src/k8s.io cd $GOPATH/src/k8s.io git clone https://github.com/kubernetes/kubernetes cd kubernetes # 以 1.19.x 分支为例我们签出源代码 git checkout release-1.19 # 或签出指定 tag 版本 git checkout v1.
         </p>
     </div>
 </a>
@@ -58,7 +57,7 @@ kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即�
 		
 			<a href="/post/kubernetes-multi-tenancy-hnc/" class="catalogue-item">
     <div>
-        <time datetime="2020-12-28 20:34:37 &#43;0800 CST" class="catalogue-time">December 28, 2020</time>
+        <time datetime="2020-12-28 20:34:37 &#43;0800 &#43;0800" class="catalogue-time">December 28, 2020</time>
         <h1 class="catalogue-title">Kubernetes 层级命名空间 HNC - 3 Why</h1>
         <div class="catalogue-line"></div>
 
@@ -129,7 +128,7 @@ kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即�
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2021-01-02 21:21:33.473785533 &#43;0800 CST m=&#43;0.038914399">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2021-01-18 06:22:52.134262905 &#43;0000 UTC m=&#43;0.167919794">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
