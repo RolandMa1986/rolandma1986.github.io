@@ -55,6 +55,21 @@
 </a>
 
 		
+			<a href="/post/kubernetes-multi-tenancy-kiosk/" class="catalogue-item">
+    <div>
+        <time datetime="2020-12-30 20:46:17 &#43;0800 &#43;0800" class="catalogue-time">December 30, 2020</time>
+        <h1 class="catalogue-title">Kiosk 多租户扩展-基本概念</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+            Kubernetes 多租户扩展  使用 Accounts 与 Account User 在共享的 Kubernetes 集群中区分租户 租户自助 Namespace 空间配置 Account Limits 账户配额保障服务质量与公平性 Namespace Templates 命名空间模板保证租户隔离与自助初始化 Namespace。 *多集群租户管理以共享集群池  Why kiosk Kubernetes 被设计为一个单租户平台，因此在单集群上实现多租户功能变得十分困难。然而，共享一个集群有很多优势，例如，资源利用率高，管理配置成本低，也可使租户更容易共享集群内部资源。
+当然，创建多租户 Kubernetes 集群的方法有很多，许多 Kubernetes 发行版也提出了他们自己的租户逻辑，然而却没有一个种轻量级的，可热拔插，并可定制化的解决方案。使管理员可以在任何标准的 Kubernetes 集群之上增加多租户能力。
+kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即用：可轻而易举地在任何已有集群中安装，适用于多种不同的场景 快速：着重于租户的自动化与自助服务 安全：为不同级别的租户隔离提供默认配置 可扩展：providing building blocks for higher-level Kubernetes platforms  架构 kiosk 的核心理念是使用 Kubernetes Namespace 作为隔离的工作空间，租户的应用可以运行在彼此隔离的空间中。为了降低管理成本，集群管理员应该配置 kiosk，然后它将成为一个租户可以在 Kubernetes 中自助配置 Namespace 的系统。
+        </p>
+    </div>
+</a>
+
+		
 			<a href="/post/kubernetes-multi-tenancy-hnc/" class="catalogue-item">
     <div>
         <time datetime="2020-12-28 20:34:37 &#43;0800 &#43;0800" class="catalogue-time">December 28, 2020</time>
@@ -98,20 +113,6 @@
 </a>
 
 		
-			<a href="/post/kubernetes-rbac-certificates/" class="catalogue-item">
-    <div>
-        <time datetime="2020-12-04 00:37:34 &#43;0000 UTC" class="catalogue-time">December 4, 2020</time>
-        <h1 class="catalogue-title">Kubernetes RBAC - 证书认证</h1>
-        <div class="catalogue-line"></div>
-
-        <p>
-            X509 客户证书 一般 Kubernetes 集群都会启用基于客户证书的用户认证模式。 API Server 通过 --client-ca-file=SOMEFILE 选项配置 CA 证书用于客户证书认证。如果提供的证书被验证通过，则 subject 中的公共名称（Common Name）就被作为请求的用户名。 通常可以使用两种方式签发：
- 通过 CertificateSigningRequest 资源类型允许客户申请签名 X.509 证书 使用外部证书服务颁发证书，如 openssl  通过 CSR API 签发证书步骤：  生成用户私钥：  openssl genrsa -out user2.key 2048 使用私钥生成证书签名请求 CSR:  openssl req -new -key user2.key -out user2.csr -subj &#34;/CN=user2/O=group1/O=group2&#34;  如果遇到错误信息 Can't load /home/ubuntu/.
-        </p>
-    </div>
-</a>
-
-		
 	</div>
 
 	<div class="pagination">
@@ -128,7 +129,7 @@
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2021-01-18 06:22:52.134262905 &#43;0000 UTC m=&#43;0.167919794">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2021-04-09 02:31:24.549242271 &#43;0000 UTC m=&#43;0.177403290">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

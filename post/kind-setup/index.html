@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>基于Ubuntu18.04的云原生应用开发环境搭建 – KinD 搭建Kubernetes多节点集群 &middot; Roland&#39;s Blog</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+	</head>
+
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Roland&#39;s Blog</h2>
+				</a>
+				<ul>
+    
+    
+</ul>
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        
+        <br>
+        <span>on&nbsp;</span><time datetime="2020-10-19 01:13:57 &#43;0000 UTC">October 19, 2020</time>
+</div>
+
+		<h1 class="post-title">基于Ubuntu18.04的云原生应用开发环境搭建 – KinD 搭建Kubernetes多节点集群</h1>
+<div class="post-line"></div>
+
+		
+
+		<h1 id="基于ubuntu1804的云原生应用开发环境搭建----kind-搭建kubernetes多节点集群">基于Ubuntu18.04的云原生应用开发环境搭建 &ndash; KinD 搭建Kubernetes多节点集群</h1>
+<p>KinD是Kubernetes in Docker的简称，它的主要目标是用于测试Kubernetes本身。也可以用于搭建本地Kubernetes开发环境，开发云原生应用。KinD可以运行在Windows，Macos和linux中。本文以Ubuntu为例，介绍kind的常用命令以及配置。</p>
+<h2 id="前提条件">前提条件</h2>
+<ul>
+<li>已安装Ubuntu18.04桌面版</li>
+<li>已安装Docker</li>
+</ul>
+<h2 id="下载最新版kind">下载最新版KinD</h2>
+<p>当前kind版本为v0.9.0,可以使用以下命令下载并安装</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/
+</code></pre></div><h2 id="kind使用">Kind使用</h2>
+<h3 id="创建集群">创建集群</h3>
+<p>创建Kubernetes集群最简单的方式就是使用<code>kind create cluster</code>命令。执行后3-5分钟即可启动一个K8S集群。同时kind会更新<code>${HOME}/.kube/config</code>下的kubeconfig。默认集群名字为kind，也可通过&ndash;name 指定名称。</p>
+<h3 id="常用命令">常用命令</h3>
+<ul>
+<li>查看已创建的集群</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kind get clusters
+</code></pre></div><ul>
+<li>删除集群</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kind delete cluster --name your-cluster
+</code></pre></div><h2 id="高级选项">高级选项</h2>
+<h3 id="多节点集群">多节点集群</h3>
+<p>kind最重要的功能之一是创建多节点集群，为了创建多个node，我们需要先创建一个yaml配置文件。如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># three node (two workers) cluster config</span>
+<span style="color:#66d9ef">kind</span>: Cluster
+<span style="color:#66d9ef">apiVersion</span>: kind.x-k8s.io/v1alpha4
+<span style="color:#66d9ef">nodes</span>:
+- <span style="color:#66d9ef">role</span>: control-plane
+- <span style="color:#66d9ef">role</span>: worker
+- <span style="color:#66d9ef">role</span>: worker
+</code></pre></div><p>然后通过&ndash;config 选项创建集群。</p>
+<h3 id="高级配置">高级配置</h3>
+<p>日常工作中， 有以下三个常用配置供大家参考:</p>
+<ol>
+<li>通过image配置Kubernetes版本为1.17.5</li>
+<li>将/etc/localtime映射到node的容器。注意:很多helm chart中会使用到localtime。但是node的容器中并不包含localtime，因此挂载。</li>
+<li>使用镜像加速docker.io访问。注意，kind node中默认使用cri-o容器引擎。</li>
+</ol>
+<pre><code>kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  image: kindest/node:v1.17.5
+  extraMounts:
+  - hostPath: /etc/localtime
+    containerPath: /etc/localtime
+containerdConfigPatches:
+- |-
+  [plugins.&quot;io.containerd.grpc.v1.cri&quot;.registry.mirrors.&quot;docker.io&quot;]
+    endpoint = [&quot;https://docker.mirrors.ustc.edu.cn&quot;]
+</code></pre><p>更多选项可以在官网查找:
+<a href="https://kind.sigs.k8s.io/docs/user/configuration/">https://kind.sigs.k8s.io/docs/user/configuration/</a></p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/post/vscode-golang/" class="left arrow">&#8592;</a>
+		<a href="/post/spring-cloud-on-kubeshpere/" class="right arrow">&#8594;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			
+			<span>
+			&copy; <time datetime="2021-04-09 02:31:24.493132849 &#43;0000 UTC m=&#43;0.121293874">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>

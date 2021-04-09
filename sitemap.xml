@@ -18,6 +18,11 @@
   </url>
   
   <url>
+    <loc>/post/kubernetes-multi-tenancy-kiosk/</loc>
+    <lastmod>2020-12-30T20:46:17+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/post/kubernetes-multi-tenancy-hnc/</loc>
     <lastmod>2020-12-28T20:34:37+08:00</lastmod>
   </url>
@@ -50,6 +55,11 @@
   <url>
     <loc>/post/spring-cloud-on-kubeshpere/</loc>
     <lastmod>2020-10-22T02:06:46+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/kind-setup/</loc>
+    <lastmod>2020-10-19T01:13:57+00:00</lastmod>
   </url>
   
   <url>

@@ -41,6 +41,20 @@
 
 	<div class="catalogue">
 		
+			<a href="/post/kubernetes-rbac-certificates/" class="catalogue-item">
+    <div>
+        <time datetime="2020-12-04 00:37:34 &#43;0000 UTC" class="catalogue-time">December 4, 2020</time>
+        <h1 class="catalogue-title">Kubernetes RBAC - 证书认证</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+            X509 客户证书 一般 Kubernetes 集群都会启用基于客户证书的用户认证模式。 API Server 通过 --client-ca-file=SOMEFILE 选项配置 CA 证书用于客户证书认证。如果提供的证书被验证通过，则 subject 中的公共名称（Common Name）就被作为请求的用户名。 通常可以使用两种方式签发：
+ 通过 CertificateSigningRequest 资源类型允许客户申请签名 X.509 证书 使用外部证书服务颁发证书，如 openssl  通过 CSR API 签发证书步骤：  生成用户私钥：  openssl genrsa -out user2.key 2048 使用私钥生成证书签名请求 CSR:  openssl req -new -key user2.key -out user2.csr -subj &#34;/CN=user2/O=group1/O=group2&#34;  如果遇到错误信息 Can't load /home/ubuntu/.
+        </p>
+    </div>
+</a>
+
+		
 			<a href="/post/cka-in-action-chapter1-installation/" class="catalogue-item">
     <div>
         <time datetime="2020-11-19 09:30:43 &#43;0000 UTC" class="catalogue-time">November 19, 2020</time>
@@ -84,14 +98,18 @@ Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm 
 </a>
 
 		
-			<a href="/post/vscode-golang/" class="catalogue-item">
+			<a href="/post/kind-setup/" class="catalogue-item">
     <div>
-        <time datetime="2020-09-22 01:42:38 &#43;0000 UTC" class="catalogue-time">September 22, 2020</time>
-        <h1 class="catalogue-title">基于Ubuntu18.04的云原生应用开发环境搭建VSCode&amp;Golang</h1>
+        <time datetime="2020-10-19 01:13:57 &#43;0000 UTC" class="catalogue-time">October 19, 2020</time>
+        <h1 class="catalogue-title">基于Ubuntu18.04的云原生应用开发环境搭建 – KinD 搭建Kubernetes多节点集群</h1>
         <div class="catalogue-line"></div>
 
         <p>
-            
+            基于Ubuntu18.04的云原生应用开发环境搭建 &ndash; KinD 搭建Kubernetes多节点集群 KinD是Kubernetes in Docker的简称，它的主要目标是用于测试Kubernetes本身。也可以用于搭建本地Kubernetes开发环境，开发云原生应用。KinD可以运行在Windows，Macos和linux中。本文以Ubuntu为例，介绍kind的常用命令以及配置。
+前提条件  已安装Ubuntu18.04桌面版 已安装Docker  下载最新版KinD 当前kind版本为v0.9.0,可以使用以下命令下载并安装
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64 chmod +x ./kind sudo mv ./kind /usr/local/bin/ Kind使用 创建集群 创建Kubernetes集群最简单的方式就是使用kind create cluster命令。执行后3-5分钟即可启动一个K8S集群。同时kind会更新${HOME}/.kube/config下的kubeconfig。默认集群名字为kind，也可通过&ndash;name 指定名称。
+常用命令  查看已创建的集群  kind get clusters  删除集群  kind delete cluster --name your-cluster 高级选项 多节点集群 kind最重要的功能之一是创建多节点集群，为了创建多个node，我们需要先创建一个yaml配置文件。如：
+# three node (two workers) cluster config kind: Cluster apiVersion: kind.
         </p>
     </div>
 </a>
@@ -104,6 +122,8 @@ Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm 
 			<a href="/" class="left arrow">&#8592;</a>
 		
 		
+			<a href="/page/3/" class="right arrow">&#8594;</a>
+		
 
 		<span>2</span>
 	</div>
@@ -113,7 +133,7 @@ Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm 
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2021-01-18 06:22:52.137516461 &#43;0000 UTC m=&#43;0.171173350">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2021-04-09 02:31:24.553379117 &#43;0000 UTC m=&#43;0.181540133">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
