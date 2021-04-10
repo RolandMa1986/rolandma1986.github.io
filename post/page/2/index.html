@@ -36,6 +36,19 @@
 <main>
 	<div class="catalogue">
 		
+			<a href="/post/kubernetes-no-podsandbox-found/" class="catalogue-item">
+    <div>
+        <time datetime="2020-12-08 03:38:37 &#43;0000 UTC" class="catalogue-time">December 8, 2020</time>
+        <h1 class="catalogue-title">Kubernetes - &#39;No Podsandbox Found with Id&#39; 导致 Kubelet 启动失败分析过程总结</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+            <p>某线上客户反应 Kubernetes 集群中一节点显示为 &ldquo;NotReady&rdquo; 状态，重启 Kubelet 后任然无法恢复。由于无法连接环境，只能拿到少量相关日志信息，因此尝试本地重现。</p>
+        </p>
+    </div>
+</a>
+
+		
 			<a href="/post/kubernetes-rbac-certificates/" class="catalogue-item">
     <div>
         <time datetime="2020-12-04 00:37:34 &#43;0000 UTC" class="catalogue-time">December 4, 2020</time>
@@ -93,23 +106,6 @@ Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm 
 </a>
 
 		
-			<a href="/post/kind-setup/" class="catalogue-item">
-    <div>
-        <time datetime="2020-10-19 01:13:57 &#43;0000 UTC" class="catalogue-time">October 19, 2020</time>
-        <h1 class="catalogue-title">基于Ubuntu18.04的云原生应用开发环境搭建 – KinD 搭建Kubernetes多节点集群</h1>
-        <div class="catalogue-line"></div>
-
-        <p>
-            基于Ubuntu18.04的云原生应用开发环境搭建 &ndash; KinD 搭建Kubernetes多节点集群 KinD是Kubernetes in Docker的简称，它的主要目标是用于测试Kubernetes本身。也可以用于搭建本地Kubernetes开发环境，开发云原生应用。KinD可以运行在Windows，Macos和linux中。本文以Ubuntu为例，介绍kind的常用命令以及配置。
-前提条件  已安装Ubuntu18.04桌面版 已安装Docker  下载最新版KinD 当前kind版本为v0.9.0,可以使用以下命令下载并安装
-curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64 chmod +x ./kind sudo mv ./kind /usr/local/bin/ Kind使用 创建集群 创建Kubernetes集群最简单的方式就是使用kind create cluster命令。执行后3-5分钟即可启动一个K8S集群。同时kind会更新${HOME}/.kube/config下的kubeconfig。默认集群名字为kind，也可通过&ndash;name 指定名称。
-常用命令  查看已创建的集群  kind get clusters  删除集群  kind delete cluster --name your-cluster 高级选项 多节点集群 kind最重要的功能之一是创建多节点集群，为了创建多个node，我们需要先创建一个yaml配置文件。如：
-# three node (two workers) cluster config kind: Cluster apiVersion: kind.
-        </p>
-    </div>
-</a>
-
-		
 	</div>
 	
 	<div class="pagination">
@@ -128,7 +124,7 @@ curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64 chmod +x ./k
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2021-04-09 02:31:24.553694039 &#43;0000 UTC m=&#43;0.181855048">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2021-04-10 12:34:41.347235672 &#43;0000 UTC m=&#43;0.327600774">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Kubernetes CNI 插件性能测试 &middot; Roland&#39;s Blog</title>
+
+		
+  		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/fonts.css">
+		
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+		
+		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+	</head>
+
+    <body>
+        		<nav class="nav">
+			<div class="nav-container">
+				<a href="/">
+					<h2 class="nav-title">Roland&#39;s Blog</h2>
+				</a>
+				<ul>
+    
+    
+</ul>
+			</div>
+		</nav>
+
+        
+
+<main>
+	<div class="post">
+		<div class="post-info">
+    <span>Written by</span>
+        
+        <br>
+        <span>on&nbsp;</span><time datetime="2021-04-07 01:13:57 &#43;0000 UTC">April 7, 2021</time>
+</div>
+
+		<h1 class="post-title">Kubernetes CNI 插件性能测试</h1>
+<div class="post-line"></div>
+
+		
+
+		<p>网络性能是影响 Kubernetes 集群与应用性能的重要指标之一。同时网络架构也是 Kubernetes 中较为复杂模块之一，Kubernetes 通过开放 CNI 接口，实现了网络插件即插即用功能，CNI 插件的实现方式是影响网络性能的最主要因素。目前主流的 CNI 插件包括：Flannel、Calico、Weave、Canal 和 Cilium 等。除 CNI 插件外，Kube-proxy 运行模式也是影响网络性能的重要因素之一。 Kubernetes 通过 Kube-proxy 提供了集群内负载均衡的能力，其内置方式有 Iptables 和 IPVS 等两种。在不同的场景下，CNI 和 Kube-proxy 都会对网络性能产生显著的影响。本文着重对 Kubernetes 网络性能测试的方法以及影响因素进行讲解和分析，不包含具体插件的性能比较。</p>
+<h2 id="kubernetes-网络通讯模式">Kubernetes 网络通讯模式</h2>
+<p>在 Kubernetes 网络中，主要有以下几种通讯场景：</p>
+<ol>
+<li>容器与容器之间的直接通信，通过本地回环实现，不通过网络插件协议栈，因此测试可以忽略。</li>
+<li>Pod与Pod之间的通信，这是测试中的重点，同等条件(物理网卡带宽、CPU等)下性能主要受 CNI 插件影响。</li>
+<li>Pod到Service之间的通信，会受到 CNI 与 Kube-proxy 的共同影响，因此也是测试的重点之一。</li>
+<li>集群外部与内部组件之间的通信。集群外部访问的模式较多，链路较长，本文不做重点介绍。</li>
+</ol>
+<p><img src="https://pek3b.qingstor.com/roland-blogs/image/spring-cloud-on-kubeshpere/pod-to-pod.png" alt="pod to pod"></p>
+<p><img src="https://pek3b.qingstor.com/roland-blogs/image/spring-cloud-on-kubeshpere/pod-to-service.png" alt="pod to service"></p>
+<p>除以上场景外，还需要考虑 POD 之间通讯是在同 NODE 与不同 NODE 等两种情况。如果再加上网络协议类型，那么我们需要考虑：通讯场景、协议、跨主机等三个维度的组合。以最常见的模式，我们可以得到以下8种组合：</p>
+<table>
+<thead>
+<tr>
+<th>TCP/UDP</th>
+<th>Pod to Pod</th>
+<th>Pod to Service</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>local</td>
+<td>y</td>
+<td>y</td>
+</tr>
+<tr>
+<td>Remote</td>
+<td>y</td>
+<td>y</td>
+</tr>
+</tbody>
+</table>
+<p>当然以上并未覆盖所有场景，比如：</p>
+<ol>
+<li>Pod 通过 Service 访问自身暴露的服务时，需要使用 Hairpin 模式。可以根据具体场景选择测试与否。</li>
+<li>Host Network 即 Pod 中运行的应用程序可以直接使用宿主主机的网络接口。使用 Host Network 时，可以认为其性能只受物理资源限制，不受容器网络，插件等其他因素影响。因此可以使用此模式进行基准测试。</li>
+</ol>
+<h2 id="网络测试性能指标">网络测试性能指标</h2>
+<p>网络性能主要两个指标是带宽和延时。延迟决定最大的QPS(Query Per Second)，而带宽决定了可支撑的最大负荷。除以上两个指标外，在 Kubenetes 集群中另一个不可忽略的因素是 CPU 与内存。高速的网络传输时不可以避免消耗更多CPU资源，而通常 POD 都会受到 CPU 资源限制，因此 CPU 和 内存消耗也应列入性能考察指标中。</p>
+<p>除以上两个指标外，还需对网络质量进行考察，如网络延迟抖动，数据包丢包率等。因此需对以上两个指标进行统计计算，如平均值，最大值，90%值等。</p>
+<h2 id="测试工具">测试工具</h2>
+<p>qperf 和 iperf3 是最常用的网络性能测试工具，对 Kubernetes 网络测试仍需依赖这两款软件。</p>
+<ul>
+<li>iperf3 是一款基于TCP/IP和UDP/IP的网络性能测试工具，可以用来测量网络带宽和网络质量，提供网络延迟抖动、数据包丢失率、最大传输单元等统计信息。iperf3 可以设置数据统计的间隔，用来统计网络波动情况。</li>
+<li>qperf 可以用来测试两个节点之间的带宽（bandwidth）和延迟（latency），除此以外还可以统计 CPU 使用率。但输出结果中只包含运行时间段的平均值。</li>
+</ul>
+<p>对于 Kubernetes 测试，我们也可以使用以下的脚本或工具进行测试：</p>
+<ul>
+<li><a href="https://github.com/InfraBuilder/k8s-bench-suite">knb</a>，是一个 bash 脚本，用于在目标 Kubernetes 集群启动性能测试，性能测试基于 iperf3 实现，并内置了一个系统资源监控工具。</li>
+<li><a href="https://github.com/kubernetes/perf-tests/tree/master/network/benchmarks/netperf">Kubernetes netperf</a> 是官办的测试工具集，提供了非常丰富的测试组合，可以覆盖大部分场景，并提供了 iperf3 与 netperf 的测试结果。</li>
+</ul>
+<p>以上工具的使用可以查看官方文档， 我们以 qperf 为例演示一下手动测试过程。</p>
+<h2 id="基于-qperf-的测试">基于 qperf 的测试</h2>
+<h3 id="部署-qperf-pod">部署 qperf Pod</h3>
+<p>以下脚本启动了一个 qperf-server，并监听了 4000 端口。我们使用 nodeSelector 将服务运行在 node1 节点上：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">cat &lt;&lt; EOF | kubectl apply -f -
+<span style="color:#66d9ef">apiVersion</span>: v1
+<span style="color:#66d9ef">kind</span>: Pod
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">name</span>: qperf-server
+  <span style="color:#66d9ef">namespace</span>: default
+  <span style="color:#66d9ef">labels</span>:
+    <span style="color:#66d9ef">app</span>: qperf
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">containers</span>:
+  - <span style="color:#66d9ef">image</span>: <span style="color:#e6db74">&#34;arjanschaaf/centos-qperf&#34;</span>
+    <span style="color:#66d9ef">args</span>: [<span style="color:#e6db74">&#34;-lp&#34;</span>, <span style="color:#e6db74">&#34;4000&#34;</span>]
+    <span style="color:#66d9ef">imagePullPolicy</span>: <span style="color:#e6db74">&#34;IfNotPresent&#34;</span>
+    <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;qperf-server&#34;</span>
+    <span style="color:#66d9ef">ports</span>:
+    - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">4000</span>
+      <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;p1udp&#34;</span>
+      <span style="color:#66d9ef">protocol</span>: UDP
+    - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">4000</span>
+      <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;p1tcp&#34;</span>
+      <span style="color:#66d9ef">protocol</span>: TCP
+    - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">4001</span>
+      <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;p2tcp&#34;</span>
+      <span style="color:#66d9ef">protocol</span>: TCP
+    - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">4001</span>
+      <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;p2udp&#34;</span>
+      <span style="color:#66d9ef">protocol</span>: UDP
+  <span style="color:#66d9ef">restartPolicy</span>: Always
+  <span style="color:#66d9ef">nodeSelector</span>:
+    <span style="color:#66d9ef">kubernetes.io/hostname</span>: node1
+EOF
+</code></pre></div><h3 id="部署-qperf-服务">部署 qperf 服务</h3>
+<p>如果需要针对服务进行测试，我们可以使用以下脚本暴露服务。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">cat &lt;&lt; EOF | kubectl apply -f -
+<span style="color:#66d9ef">apiVersion</span>: v1
+<span style="color:#66d9ef">kind</span>: Service
+<span style="color:#66d9ef">metadata</span>:
+  <span style="color:#66d9ef">labels</span>:
+    <span style="color:#66d9ef">app</span>: perf
+<span style="color:#66d9ef">spec</span>:
+  <span style="color:#66d9ef">ports</span>:
+  - <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">4000</span>
+    <span style="color:#66d9ef">protocol</span>: TCP
+    <span style="color:#66d9ef">targetPort</span>: <span style="color:#ae81ff">4000</span>
+  - <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">4000</span>
+    <span style="color:#66d9ef">protocol</span>: UDP
+    <span style="color:#66d9ef">targetPort</span>: <span style="color:#ae81ff">4000</span>
+  - <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">4001</span>
+    <span style="color:#66d9ef">protocol</span>: TCP
+    <span style="color:#66d9ef">targetPort</span>: <span style="color:#ae81ff">4001</span>
+  - <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">4001</span>
+    <span style="color:#66d9ef">protocol</span>: UDP
+    <span style="color:#66d9ef">targetPort</span>: <span style="color:#ae81ff">4001</span>
+  <span style="color:#66d9ef">selector</span>:
+    <span style="color:#66d9ef">app</span>: perf
+  <span style="color:#66d9ef">type</span>: ClusterIP
+EOF
+</code></pre></div><h3 id="执行测试">执行测试</h3>
+<p>当我们需要测试跨节点 Pod 的带宽与延迟时，我们在命令中使用了 tcp_bw tcp_lat 等参数，并指定在 Node2 上运行 qperf-client：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 获取 Pod IP</span>
+serverip<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>kubectl get pod qperf-server -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{ .status.podIP }&#39;</span><span style="color:#e6db74">`</span>
+kubectl run qperf-client -it --rm --image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;arjanschaaf/centos-qperf&#34;</span> --overrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{ &#34;spec&#34;: { &#34;template&#34;: { &#34;spec&#34;: { &#34;nodeSelector&#34;: {&#34;kubernetes.io/hostname&#34;: &#34;node2&#34; } } } } }&#39;</span> -- -v $serverip -lp <span style="color:#ae81ff">4000</span> -ip <span style="color:#ae81ff">4001</span> -t <span style="color:#ae81ff">120</span> tcp_bw tcp_lat
+</code></pre></div><p>测试结果输出如下：</p>
+<pre><code>tcp_bw
+    bw              =   4.04 GB/sec
+    msg_rate        =   61.7 K/sec
+    port            =  4,001 
+    time            =    120 sec
+    send_cost       =    508 ms/GB
+    recv_cost       =    508 ms/GB
+    send_cpus_used  =    206 % cpus
+    recv_cpus_used  =    206 % cpus
+tcp_lat:
+    latency        =   11.9 us
+    msg_rate       =   84.2 K/sec
+    port           =  4,001 
+    time           =    120 sec
+    loc_cpus_used  =    121 % cpus
+    rem_cpus_used  =    121 % cpus 
+</code></pre><p>如需测试 Pod 到服务的网路带宽，我们仅需要替换服务 IP 参数：</p>
+<pre><code>serverip=`kubectl get svc qperf-server -o jsonpath='{ .spec.clusterIP }'`
+</code></pre><h2 id="最后">最后</h2>
+<p>上面内容简略的分析了 Kubernetes 下网络性能测试的基本场景以及常用指标。并简要的介绍了几款网络性能测试工具。最后演示了如何使用 qperf 进行网络测试。选择合适的场景及指标是性能测试工作的重点，在网络性能的优化以及插件选择过程中都需要以上数据的支撑。</p>
+
+
+		
+	</div>
+
+	<div class="pagination">
+		<a href="/post/kubernetes-debug-kubernetes-source-code/" class="left arrow">&#8592;</a>
+
+		<a href="#" class="top">Top</a>
+	</div>
+</main>
+
+
+        		<footer>
+			
+			<span>
+			&copy; <time datetime="2021-04-10 12:34:41.284269159 &#43;0000 UTC m=&#43;0.264634065">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			</span>
+		</footer>
+
+    </body>
+</html>

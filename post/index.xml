@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Sun, 17 Jan 2021 12:41:52 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 07 Apr 2021 01:13:57 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes CNI 插件性能测试</title>
+      <link>/post/kubernetes-cni-performance/</link>
+      <pubDate>Wed, 07 Apr 2021 01:13:57 +0000</pubDate>
+      
+      <guid>/post/kubernetes-cni-performance/</guid>
+      <description>网络性能是影响 Kubernetes 集群与应用性能的重要指标之一。同时网络架构也是 Kubernetes 中较为复杂模块之一，Kubernetes 通过开放 CNI 接口，实现了网络插件即插即用功能，CNI 插件的实现方式是影响网络性能的最主要因素。目前主流的 CNI 插件包括：Flannel、Calico、Weave、Canal 和 Cilium 等。除 CNI 插件外，Kube-proxy 运行模式也是影响网络性能的重要因素之一。 Kubernetes 通过 Kube-proxy 提供了集群内负载均衡的能力，其内置方式有 Iptables 和 IPVS 等两种。在不同的场景下，CNI 和 Kube-proxy 都会对网络性能产生显著的影响。本文着重对 Kubernetes 网络性能测试的方法以及影响因素进行讲解和分析，不包含具体插件的性能比较。
+Kubernetes 网络通讯模式 在 Kubernetes 网络中，主要有以下几种通讯场景：
+ 容器与容器之间的直接通信，通过本地回环实现，不通过网络插件协议栈，因此测试可以忽略。 Pod与Pod之间的通信，这是测试中的重点，同等条件(物理网卡带宽、CPU等)下性能主要受 CNI 插件影响。 Pod到Service之间的通信，会受到 CNI 与 Kube-proxy 的共同影响，因此也是测试的重点之一。 集群外部与内部组件之间的通信。集群外部访问的模式较多，链路较长，本文不做重点介绍。  除以上场景外，还需要考虑 POD 之间通讯是在同 NODE 与不同 NODE 等两种情况。如果再加上网络协议类型，那么我们需要考虑：通讯场景、协议、跨主机等三个维度的组合。以最常见的模式，我们可以得到以下8种组合：</description>
+    </item>
     
     <item>
       <title>Kubernetes 源码调试</title>
