@@ -7,10 +7,23 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Wed, 07 Apr 2021 01:13:57 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 24 May 2021 06:52:16 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Helm Tips</title>
+      <link>/post/helm-tips/</link>
+      <pubDate>Mon, 24 May 2021 06:52:16 +0000</pubDate>
+      
+      <guid>/post/helm-tips/</guid>
+      <description>Helm 是最常用的 Kubernetes 包管理器之一。但实际应使用时却会面对各种复杂的问题，以下内容是对常见应用场景的简要总结：
+将 kubectl 部署的资源转为 Helm 资源 如果您的项目最初不是使用 Helm 进行资源管理且已经部署在线上运行，那么你可能需要将已有资源转换 Helm 资源。 否则直接运行 helm install 这时你将看见如下错误信息：
+Error: rendered manifests contain a resource that already exists. Unable to continue with install: 
+解决这个问题的方法很简单，只需要将对应的资源打上 Helm 的 Label 和 Annotation 即可:
+KIND=deployment NAME=my-app-staging RELEASE=staging NAMESPACE=default kubectl annotate $KIND $NAME meta.helm.sh/release-name=$RELEASE kubectl annotate $KIND $NAME meta.</description>
+    </item>
     
     <item>
       <title>Kubernetes CNI 插件性能测试</title>

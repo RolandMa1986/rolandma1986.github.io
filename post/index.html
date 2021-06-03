@@ -36,6 +36,23 @@
 <main>
 	<div class="catalogue">
 		
+			<a href="/post/helm-tips/" class="catalogue-item">
+    <div>
+        <time datetime="2021-05-24 06:52:16 &#43;0000 UTC" class="catalogue-time">May 24, 2021</time>
+        <h1 class="catalogue-title">Helm Tips</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+            Helm 是最常用的 Kubernetes 包管理器之一。但实际应使用时却会面对各种复杂的问题，以下内容是对常见应用场景的简要总结：
+将 kubectl 部署的资源转为 Helm 资源 如果您的项目最初不是使用 Helm 进行资源管理且已经部署在线上运行，那么你可能需要将已有资源转换 Helm 资源。 否则直接运行 helm install 这时你将看见如下错误信息：
+Error: rendered manifests contain a resource that already exists. Unable to continue with install: 
+解决这个问题的方法很简单，只需要将对应的资源打上 Helm 的 Label 和 Annotation 即可:
+KIND=deployment NAME=my-app-staging RELEASE=staging NAMESPACE=default kubectl annotate $KIND $NAME meta.helm.sh/release-name=$RELEASE kubectl annotate $KIND $NAME meta.
+        </p>
+    </div>
+</a>
+
+		
 			<a href="/post/kubernetes-cni-performance/" class="catalogue-item">
     <div>
         <time datetime="2021-04-07 01:13:57 &#43;0000 UTC" class="catalogue-time">April 7, 2021</time>
@@ -97,19 +114,6 @@ kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即�
 </a>
 
 		
-			<a href="/post/how-to-get-source-code-of-package/" class="catalogue-item">
-    <div>
-        <time datetime="2020-12-14 15:03:27 &#43;0000 UTC" class="catalogue-time">December 14, 2020</time>
-        <h1 class="catalogue-title">使用 apt 命令获取 Ubuntu 安装包源码</h1>
-        <div class="catalogue-line"></div>
-
-        <p>
-            <p>由于最近需要研究一个关于 Ubuntu 上 systemd 的问题，因此需要下载 systemd 的源代码。 一般源码下载可以在官网或者Github中下载，如 systemd。但是由于 linux 各个分发版本可能会给它们打上自己的补丁，因此我们需要从 Ubuntu 下载其源码包。在 Debian 或 Ubuntu 的系统中源码是文件版的软件发行包，因此我们可以使用 apt-get 或者 apt 命令下载其源码 (DEB 文件包)。</p>
-        </p>
-    </div>
-</a>
-
-		
 	</div>
 	
 	<div class="pagination">
@@ -126,7 +130,7 @@ kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即�
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2021-04-10 12:34:41.344240341 &#43;0000 UTC m=&#43;0.324605238">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2021-06-03 02:52:53.330958935 &#43;0000 UTC m=&#43;0.447745659">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
