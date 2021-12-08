@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Fri, 19 Nov 2021 13:23:25 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 06 Dec 2021 01:13:57 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes webhook 本地调试方法</title>
+      <link>/post/kubernetes-webhook-debug-locally/</link>
+      <pubDate>Mon, 06 Dec 2021 01:13:57 +0000</pubDate>
+      
+      <guid>/post/kubernetes-webhook-debug-locally/</guid>
+      <description>在 Kubernetes Webhook 开发过程中，调试是复杂场景下不可或缺的步骤。 但 Kubebuilder 文档中只给出了的远程部署运行步骤以及禁用 webhook 的方法，并没有给出本地调试的具体方法，只是了了数字带过：
+ If you want to run the webhooks locally, you’ll have to generate certificates for serving the webhooks, and place them in the right directory (/tmp/k8s-webhook-server/serving-certs/tls.{crt,key}, by default).
+  If you’re not running a local API server, you’ll also need to figure out how to proxy traffic from the remote cluster to your local webhook server.</description>
+    </item>
     
     <item>
       <title>深入浅出 Kubernetes 项目网关与应用路由</title>
@@ -18,10 +29,7 @@
       <pubDate>Fri, 19 Nov 2021 13:23:25 +0000</pubDate>
       
       <guid>/post/kubesphere-routing/</guid>
-      <description>KubeSphere 项目网关与应用路由提供了一种聚合服务的方式，将集群的内部服务通过一个外部可访问的 IP 地址以 HTTP 或 HTTPs 暴露给集群外部。应用路由定义了这些服务的访问规则，用户可以定义基于 host 主机名称和 URL 匹配的规则。同时还可以配置 HTTPs offloading 等选项。项目网关则是应用路由的具体实现，它承载了流量的入口并根据应用路由规则将匹配到的请求转发至集群内的服务。
-整体架构 用户的服务和应用路由的架构密不可分，因此我们需要结合用户服务来理解项目网关的整体架构。一个典型生产环境中，项目网关架构如下图所示：
-图中组件共分为四个部分:
- Nginx Ingress Controller 是应用网关的核心组件。KubeSphere 项目网关基于 Nginx Ingress Controller 实现，它通过获 Ingress 对象生成 Nginx 反向代理规则配置并配置应用于 Nginx 服务。应用路由是一个 Ingress 对象。应用网关依赖于 Service 对外暴露 Nginx 服务，因此 Service 在生产环境中一般设置为 LoadBalancer 类型，由云服务商配置其公有云 IP 地址及外部负载均衡器，用以保障服务的高可用性。 外部负载均衡器，应用网关的 Service 生成的外部负载均衡器，一般由各个云服务商提供。因此每种负载均衡器的特性有很多差别，比如 SLA、带宽、IP 配置等等。我们一般可以通过服务商提供的注解对其进行配置，在设置网关时，我们通常需要了解这些特性。 DNS 域名解析服务， 一般由域名服务商提供服务，我们可以配置域名解析纪录将域名指向 LoadBalancer 的公网 IP。如果子域名也指向同一 IP，我们可以可使用泛域名解析方式。 用户服务与应用路由，用户需要为应用程序创建 Service 用于暴露集群内的服务，然后创建应用路由对外暴露服务。注，Nginx Ingress Controller 并不通过 Kube-proxy 访问服务 IP。它通过服务查找与之关联 POD 的 EndPoint，并将其设置为 Nginx 的 Upstream。Nginx 直接连接 POD 可以避免由 Service 带来的额外网络开销。  应用路由 vs Service(type=LoadBalancer) 在实践过程中，应用路由与 Service 的应用场景常常令人混淆。它们都可以向集群外暴露集群内服务，并提供负载均衡功能。并且应用路由看起来也是依赖于服务的，那么他们究竟有何区别呢？这个问题我们需要从以下几个角度理解。</description>
+      <description>&lt;p&gt;KubeSphere 项目网关与应用路由提供了一种聚合服务的方式，将集群的内部服务通过一个外部可访问的 IP 地址以 HTTP 或 HTTPs 暴露给集群外部。应用路由定义了这些服务的访问规则，用户可以定义基于 host 主机名称和 URL 匹配的规则。同时还可以配置 HTTPs offloading 等选项。项目网关则是应用路由的具体实现，它承载了流量的入口并根据应用路由规则将匹配到的请求转发至集群内的服务。&lt;/p&gt;</description>
     </item>
     
     <item>

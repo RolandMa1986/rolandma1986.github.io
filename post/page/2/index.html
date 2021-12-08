@@ -41,6 +41,21 @@
 <main>
 	<div class="catalogue">
 		
+			<a href="/post/kubernetes-multi-tenancy-kiosk/" class="catalogue-item">
+    <div>
+        <time datetime="2020-12-30 20:46:17 &#43;0800 &#43;0800" class="catalogue-time">December 30, 2020</time>
+        <h2 class="catalogue-title">Kiosk 多租户扩展-基本概念</h2>
+        <div class="catalogue-line"></div>
+
+        <p>
+            Kubernetes 多租户扩展  使用 Accounts 与 Account User 在共享的 Kubernetes 集群中区分租户 租户自助 Namespace 空间配置 Account Limits 账户配额保障服务质量与公平性 Namespace Templates 命名空间模板保证租户隔离与自助初始化 Namespace。 *多集群租户管理以共享集群池  Why kiosk Kubernetes 被设计为一个单租户平台，因此在单集群上实现多租户功能变得十分困难。然而，共享一个集群有很多优势，例如，资源利用率高，管理配置成本低，也可使租户更容易共享集群内部资源。
+当然，创建多租户 Kubernetes 集群的方法有很多，许多 Kubernetes 发行版也提出了他们自己的租户逻辑，然而却没有一个种轻量级的，可热拔插，并可定制化的解决方案。使管理员可以在任何标准的 Kubernetes 集群之上增加多租户能力。
+kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即用：可轻而易举地在任何已有集群中安装，适用于多种不同的场景 快速：着重于租户的自动化与自助服务 安全：为不同级别的租户隔离提供默认配置 可扩展：providing building blocks for higher-level Kubernetes platforms  架构 kiosk 的核心理念是使用 Kubernetes Namespace 作为隔离的工作空间，租户的应用可以运行在彼此隔离的空间中。为了降低管理成本，集群管理员应该配置 kiosk，然后它将成为一个租户可以在 Kubernetes 中自助配置 Namespace 的系统。
+        </p>
+    </div>
+</a>
+
+		
 			<a href="/post/kubernetes-multi-tenancy-hnc/" class="catalogue-item">
     <div>
         <time datetime="2020-12-28 20:34:37 &#43;0800 &#43;0800" class="catalogue-time">December 28, 2020</time>
@@ -98,21 +113,6 @@
 </a>
 
 		
-			<a href="/post/cka-in-action-chapter1-installation/" class="catalogue-item">
-    <div>
-        <time datetime="2020-11-19 09:30:43 &#43;0000 UTC" class="catalogue-time">November 19, 2020</time>
-        <h2 class="catalogue-title">CKA 实战 第二章 安装与升级</h2>
-        <div class="catalogue-line"></div>
-
-        <p>
-            Kubernetes 有多种部署方式，学习环境可以选用 Minikube 或 Kind 等。但在 CKA 认证考试中会考察基于 Kubeadm 的部署方式， 操作系统为 Ubuntu。你可以使用云主机或者VirlualBox虚拟机环境安装 Ubuntu。这里我们推荐在线教学环境 KataKoda。 Kadakda 的课程中提供了交互式教学环境，我们既可以参考其实验步骤，也可独立使用其在线环境。
-什么是 Kubeadm? Kubeadm 是 Kubernetes 集群快速安装部署工具，它解决了 Kubernetes 核心组件安装，TLS 加密配置，证书管理等问题，提供了开箱即用的安全特性。
-Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm join 将工作节点加入集群或者添加其他控制面节点 kubeadm upgrade 用户升级 Kubernetes 集群 kubeadm reset 重置当前主机，恢复 kubeadm init 或 kubeadm join 的配置。  Kubernetes 组件 Kubernetes 集群由控制面与集群节点两部分组成， 节点上运行应用的工作负载 Pod，控制面负责集群中的工作节点与 Pod 的管理。
-        </p>
-    </div>
-</a>
-
-		
 	</div>
 	
 	<div class="pagination">
@@ -131,7 +131,7 @@ Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm 
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2021-12-06 01:02:22.591710698 &#43;0000 UTC m=&#43;0.243428024">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2021-12-08 02:04:07.213589869 &#43;0000 UTC m=&#43;0.327605306">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
