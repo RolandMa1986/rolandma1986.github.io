@@ -46,6 +46,21 @@
 
 	<div class="catalogue">
 		
+			<a href="/post/sysctl-kubernetes/" class="catalogue-item">
+    <div>
+        <time datetime="2022-01-17 14:15:42 &#43;0000 UTC" class="catalogue-time">January 17, 2022</time>
+        <h2 class="catalogue-title">Kubernetes 运维必知的内核参数和优化项</h2>
+        <div class="catalogue-line"></div>
+
+        <p>
+            在 Kubernetes 安装过程中，除必要的内核参数外，Kubernetes 并未提供更多的优化建议。但无论 CentOS 或 Ubuntu 默认内核参数通常并不能满足高负载环境下的性能要求。因此，我们需要调整内核参数以优化节点的性能，并使节点更加稳定与健壮。
+内核&amp;内存&amp;文件系统 PID Max  kernel.pid_max = 32768 配置决定了系统中可用的 PID 数量。进程 ID (PID) 是 Linux 内核的一项基础资源，内核会为每个进程或线程分配一个 PID。pid_max 的默认值一般是由内核编译项或 CPU 数量决定的，对于 64位系统内核代码中给出的计算方法如下：  # https://github.com/torvalds/linux/blob/5147da902e0dd162c6254a61e4c57f21b60a9b1c/kernel/pid.c#L657 pid_max = min(4194304, max(32768, 1024 * (number of CPUs))) 以上表达式可以简单理解为，如果小于32核心则默认最大PID值为32768，超过32核心的则按1024* CPUs计算。因此，1024 也是内核推荐的每核心所调度的进程数量。
+在一个 Kebenetes 的工作节点即使调度了110个pod， 那么每个 Pod 也可以获得 200 多个 PID。这个限制对大多数应用通常是足够的。但 Kuberentes 集群中通常会存在资源超卖的情况，此时可以适当提高此设置。
+        </p>
+    </div>
+</a>
+
+		
 			<a href="/post/kubernetes-webhook-debug-locally/" class="catalogue-item">
     <div>
         <time datetime="2021-12-06 01:13:57 &#43;0000 UTC" class="catalogue-time">December 6, 2021</time>
@@ -106,20 +121,6 @@ Kubernetes 网络通讯模式 在 Kubernetes 网络中，主要有以下几种�
 </a>
 
 		
-			<a href="/post/kubernetes-debug-kubernetes-source-code/" class="catalogue-item">
-    <div>
-        <time datetime="2021-01-17 12:41:52 &#43;0000 UTC" class="catalogue-time">January 17, 2021</time>
-        <h2 class="catalogue-title">Kubernetes 源码调试</h2>
-        <div class="catalogue-line"></div>
-
-        <p>
-            前言 本文提供了一种基于 vscode 和 minikube 的快速搭建 Kubernetes 开发调试环境的方法。通过 devle 对 Kubernetes 各个组件进行远程调试。调试代码可以帮助你更深入地理解 Kubernetes 逻辑，更清晰的分析代码执行流程。
-准备阶段  Clone kubernetes 源代码 参考官方文档，将 Kubernetes clone 到默认 $GOPATH (Ubuntu 默认路径: ~/go)下  mkdir -p $GOPATH/src/k8s.io cd $GOPATH/src/k8s.io git clone https://github.com/kubernetes/kubernetes cd kubernetes # 以 1.19.x 分支为例我们签出源代码 git checkout release-1.19 # 或签出指定 tag 版本 git checkout v1.
-        </p>
-    </div>
-</a>
-
-		
 	</div>
 
 	<div class="pagination">
@@ -136,7 +137,7 @@ Kubernetes 网络通讯模式 在 Kubernetes 网络中，主要有以下几种�
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2021-12-08 02:04:07.206761109 &#43;0000 UTC m=&#43;0.320776577">2021</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-01-18 07:36:56.99912407 &#43;0000 UTC m=&#43;0.289605799">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

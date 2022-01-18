@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Mon, 06 Dec 2021 01:13:57 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 17 Jan 2022 14:15:42 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes 运维必知的内核参数和优化项</title>
+      <link>/post/sysctl-kubernetes/</link>
+      <pubDate>Mon, 17 Jan 2022 14:15:42 +0000</pubDate>
+      
+      <guid>/post/sysctl-kubernetes/</guid>
+      <description>在 Kubernetes 安装过程中，除必要的内核参数外，Kubernetes 并未提供更多的优化建议。但无论 CentOS 或 Ubuntu 默认内核参数通常并不能满足高负载环境下的性能要求。因此，我们需要调整内核参数以优化节点的性能，并使节点更加稳定与健壮。
+内核&amp;amp;内存&amp;amp;文件系统 PID Max  kernel.pid_max = 32768 配置决定了系统中可用的 PID 数量。进程 ID (PID) 是 Linux 内核的一项基础资源，内核会为每个进程或线程分配一个 PID。pid_max 的默认值一般是由内核编译项或 CPU 数量决定的，对于 64位系统内核代码中给出的计算方法如下：  # https://github.com/torvalds/linux/blob/5147da902e0dd162c6254a61e4c57f21b60a9b1c/kernel/pid.c#L657 pid_max = min(4194304, max(32768, 1024 * (number of CPUs))) 以上表达式可以简单理解为，如果小于32核心则默认最大PID值为32768，超过32核心的则按1024* CPUs计算。因此，1024 也是内核推荐的每核心所调度的进程数量。
+在一个 Kebenetes 的工作节点即使调度了110个pod， 那么每个 Pod 也可以获得 200 多个 PID。这个限制对大多数应用通常是足够的。但 Kuberentes 集群中通常会存在资源超卖的情况，此时可以适当提高此设置。</description>
+    </item>
     
     <item>
       <title>Kubernetes webhook 本地调试方法</title>
