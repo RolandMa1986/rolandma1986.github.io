@@ -102,7 +102,7 @@
 <li><code>vm.overcommit_memory = 1</code></li>
 <li><code>vm.panic_on_oom = 0</code></li>
 </ul>
-<p>Virtual Memory 技术的应用打破了物理内存限制。基于VM技术的内存申请分为两个步骤：1. 申请内存地址空间；2.初始化物理内存。当<code>overcommit_memory</code>设置为 1 时，内核总是为应用分配内存空间地址。当物理内存不足时，由 oom_killer 进行内存回收操作，杀死超出内存限制或低优先级的进程。</p>
+<p>Virtual Memory 技术的应用打破了物理内存限制。基于VM技术的内存申请分为两个步骤：1. 申请内存地址空间；2.初始化物理内存。当<code>overcommit_memory</code>设置为 1 时，内核总是为应用分配内存空间地址，而不会关心物理内存时候足够。当应用需要使用物理内存，且内存不足时，由 oom_killer 进行内存回收操作，杀死超出内存限制或低优先级的进程。</p>
 <ul>
 <li><code>kernel.panic = 10</code></li>
 <li><code>kernel.panic_on_oops = 1</code></li>
@@ -114,51 +114,43 @@
 <h2 id="网络">网络</h2>
 <h3 id="网络优化设置">网络优化设置</h3>
 <p>网络相关优化参数比较复杂，但总结起来可以归纳为三大类：</p>
-<ol>
-<li>缓存配额
+<h4 id="1-缓存配额">1. 缓存配额</h4>
 <ul>
 <li><code>net.core.rmem_max = 16777216</code></li>
 <li><code>net.core.wmem_max = 16777216</code> 每个套接字的发送和接收缓存大小，此设置适用于TCP和UDP连接。</li>
 <li><code>net.ipv4.tcp_wmem = 4096 87380 16777216</code></li>
 <li><code>net.ipv4.tcp_rmem = 4096 87380 16777216</code> 针对TCP连接的缓存配额，三个数值分别是最小值，默认值与最大值。最大值应小于前面全局配置。</li>
 </ul>
-</li>
-</ol>
-<p>很多数情况下丢包都是由于系统缓存不足而导致的，进而造成包重传从而浪费网络带宽。我们需要针对硬件规格网络带宽进一步优化这些选项。</p>
-<ol start="2">
-<li>队列限制
+<p>由于系统缓存不足而导致的丢包是网络的常见问题，丢包后会造成包重传从而浪费网络带宽。我们需要针对硬件规格网络带宽进一步优化这些选项。</p>
+<h4 id="2-队列限制">2. 队列限制</h4>
 <ul>
 <li><code>net.core.somaxconn = 32768</code> 定义了系统中每一个端口最大的监听队列的长度,</li>
 <li><code>net.ipv4.tcp_max_syn_backlog = 8096</code> 定义了半连接队列的最大长度</li>
 <li><code>net.core.netdev_max_backlog = 16384</code> 表示当每个网络接口接受数据包的速率比内核处理这些包的速率快时，允许发送队列的数据包的最大数目</li>
 </ul>
-</li>
-</ol>
 <p>当应用层来不能及时的将建立成功的TCP连接从队列中取出时,缓冲队列就会丢弃这个连接。</p>
 <blockquote>
 <p><a href="https://mp.weixin.qq.com/s/Bjjrk85MTTSiHoECNIWEaw">https://mp.weixin.qq.com/s/Bjjrk85MTTSiHoECNIWEaw</a></p>
 </blockquote>
-<ol start="3">
-<li>其他特性
+<h4 id="3-其他特性">3. 其他特性</h4>
 <ul>
 <li><code>net.ipv4.tcp_slow_start_after_idle = 0</code> 禁止 TCP 拥塞窗口重新初始化，可优化长连接下的网络性能。尤其是在内网环境比较稳定，网络无拥塞的环境中。</li>
 <li><code>net.ipv4.tcp_tw_reuse = 1</code> 客户端复用 TIME_WAIT 套接字，用于新的TCP连接。</li>
 </ul>
-</li>
-</ol>
 <blockquote>
 <p><a href="https://www.cnblogs.com/alchemystar/p/13175276.html">https://www.cnblogs.com/alchemystar/p/13175276.html</a></p>
 </blockquote>
 <h3 id="其他设置">其他设置</h3>
-<p><code>net.ipv4.ip_local_reserved_ports = 30000-32767</code>
-设置 NodePort 的保留端口范围。防止发生节点上的应用占用端口造成端口冲突。除此以外 kubelet 和 kubeproxy 还会修改,如 <code>net.ipv4.ip_forward=1</code>等网络配置，必要设置会在 kubeadm 安装过程中进行检查，在此就不再继续展开。</p>
+<ul>
+<li><code>net.ipv4.ip_local_reserved_ports = 30000-32767</code> 设置 NodePort 的保留端口范围。防止发生节点上的应用占用端口造成端口冲突。</li>
+</ul>
+<p>除此以外 kubelet 和 kubeproxy 还会修改,如 <code>net.ipv4.ip_forward=1</code>等网络配置，必要设置会在 kubeadm 安装过程中进行检查，在此就不再继续展开。</p>
 <h2 id="结语">结语</h2>
 <p>在 Kubernetes 集群中往往会运行不同种类的工作负载，这给服务器的优化带来了极大的挑战。因此在选择优化的目标时，通常是平衡而不是极致。尽可能利用 POD 与 kubelet 的设置进行POD to POD, POD to NODE 的资源限制与隔离。通用设置可参考上文中给出的推荐设置，并结合本身的硬件资源进行优化。</p>
-<p>代码参考：
-<a href="https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/component-helpers/node/util/sysctl/sysctl.go">https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/component-helpers/node/util/sysctl/sysctl.go</a>
+<p>代码参考：</p>
+<p><a href="https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/component-helpers/node/util/sysctl/sysctl.go">https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/component-helpers/node/util/sysctl/sysctl.go</a>
 <a href="https://github.com/kubernetes/kops/blob/master/nodeup/pkg/model/sysctls.go">https://github.com/kubernetes/kops/blob/master/nodeup/pkg/model/sysctls.go</a>
 <a href="https://github.com/kubesphere/kubekey/blob/master/pkg/bootstrap/os/templates/init_script.go">https://github.com/kubesphere/kubekey/blob/master/pkg/bootstrap/os/templates/init_script.go</a></p>
-
 
 		
 	</div>
@@ -174,7 +166,7 @@
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-18 07:36:56.986551674 &#43;0000 UTC m=&#43;0.277033357">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-01-19 03:17:42.853776961 &#43;0000 UTC m=&#43;0.212268511">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
