@@ -41,6 +41,19 @@
 <main>
 	<div class="catalogue">
 		
+			<a href="/post/neuvector/" class="catalogue-item">
+    <div>
+        <time datetime="2022-01-24 11:15:42 &#43;0000 UTC" class="catalogue-time">January 24, 2022</time>
+        <h2 class="catalogue-title">NeuVector 会是下一个爆款云原生安全神器吗</h2>
+        <div class="catalogue-line"></div>
+
+        <p>
+            <p>近日一则《SUSE发布NeuVector：业内首个开源容器安全平台》的文章被转载于各大IT新闻网站。作为 SUSE 家族的新进成员，在3个月后便履行了开源承诺，着实让人赞叹。那么 NeuVector 究竟有哪些过人之处能得到 SUSE 的青睐？而对比各安全厂商的开源安全产品又有哪些突破？接下来，我会以一个 SecDevOps 的视角对 NeuVector 进行简要分析。</p>
+        </p>
+    </div>
+</a>
+
+		
 			<a href="/post/sysctl-kubernetes/" class="catalogue-item">
     <div>
         <time datetime="2022-01-17 14:15:42 &#43;0000 UTC" class="catalogue-time">January 17, 2022</time>
@@ -99,21 +112,6 @@ KIND=deployment NAME=my-app-staging RELEASE=staging NAMESPACE=default kubectl an
 </a>
 
 		
-			<a href="/post/kubernetes-cni-performance/" class="catalogue-item">
-    <div>
-        <time datetime="2021-04-07 01:13:57 &#43;0000 UTC" class="catalogue-time">April 7, 2021</time>
-        <h2 class="catalogue-title">Kubernetes CNI 插件性能测试</h2>
-        <div class="catalogue-line"></div>
-
-        <p>
-            网络性能是影响 Kubernetes 集群与应用性能的重要指标之一。同时网络架构也是 Kubernetes 中较为复杂模块之一，Kubernetes 通过开放 CNI 接口，实现了网络插件即插即用功能，CNI 插件的实现方式是影响网络性能的最主要因素。目前主流的 CNI 插件包括：Flannel、Calico、Weave、Canal 和 Cilium 等。除 CNI 插件外，Kube-proxy 运行模式也是影响网络性能的重要因素之一。 Kubernetes 通过 Kube-proxy 提供了集群内负载均衡的能力，其内置方式有 Iptables 和 IPVS 等两种。在不同的场景下，CNI 和 Kube-proxy 都会对网络性能产生显著的影响。本文着重对 Kubernetes 网络性能测试的方法以及影响因素进行讲解和分析，不包含具体插件的性能比较。
-Kubernetes 网络通讯模式 在 Kubernetes 网络中，主要有以下几种通讯场景：
- 容器与容器之间的直接通信，通过本地回环实现，不通过网络插件协议栈，因此测试可以忽略。 Pod与Pod之间的通信，这是测试中的重点，同等条件(物理网卡带宽、CPU等)下性能主要受 CNI 插件影响。 Pod到Service之间的通信，会受到 CNI 与 Kube-proxy 的共同影响，因此也是测试的重点之一。 集群外部与内部组件之间的通信。集群外部访问的模式较多，链路较长，本文不做重点介绍。  除以上场景外，还需要考虑 POD 之间通讯是在同 NODE 与不同 NODE 等两种情况。如果再加上网络协议类型，那么我们需要考虑：通讯场景、协议、跨主机等三个维度的组合。以最常见的模式，我们可以得到以下8种组合：
-        </p>
-    </div>
-</a>
-
-		
 	</div>
 	
 	<div class="pagination">
@@ -130,7 +128,7 @@ Kubernetes 网络通讯模式 在 Kubernetes 网络中，主要有以下几种�
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-19 03:17:42.883129681 &#43;0000 UTC m=&#43;0.241621217">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-01-25 03:13:03.81009142 &#43;0000 UTC m=&#43;0.214047902">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

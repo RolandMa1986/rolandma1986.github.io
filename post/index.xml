@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Mon, 17 Jan 2022 14:15:42 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 24 Jan 2022 11:15:42 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>NeuVector 会是下一个爆款云原生安全神器吗</title>
+      <link>/post/neuvector/</link>
+      <pubDate>Mon, 24 Jan 2022 11:15:42 +0000</pubDate>
+      
+      <guid>/post/neuvector/</guid>
+      <description>&lt;p&gt;近日一则《SUSE发布NeuVector：业内首个开源容器安全平台》的文章被转载于各大IT新闻网站。作为 SUSE 家族的新进成员，在3个月后便履行了开源承诺，着实让人赞叹。那么 NeuVector 究竟有哪些过人之处能得到 SUSE 的青睐？而对比各安全厂商的开源安全产品又有哪些突破？接下来，我会以一个 SecDevOps 的视角对 NeuVector 进行简要分析。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Kubernetes 运维必知的内核参数和优化项</title>
