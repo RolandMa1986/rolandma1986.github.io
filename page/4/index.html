@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
     <head>
-	<meta name="generator" content="Hugo 0.74.3" />
+	<meta name="generator" content="Hugo 0.105.0">
 		
 		
 		<meta charset="UTF-8">
@@ -14,13 +14,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="/index.xml" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -38,6 +40,10 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
@@ -45,6 +51,19 @@
 
 
 	<div class="catalogue">
+		
+			<a href="/post/spring-cloud-on-kubeshpere/" class="catalogue-item">
+    <div>
+        <time datetime="2020-10-22 02:06:46 &#43;0000 UTC" class="catalogue-time">October 22, 2020</time>
+        <h2 class="catalogue-title">基于 KubeSphere 的 Spring Could 微服务 CI/CD 实践</h2>
+        <div class="catalogue-line"></div>
+
+        <p>
+            <p>本文以 Pig 为例介绍如何在 KubeSphere 上发布一个基于 Spring Cloud 微服务的 CI/CD 项目。</p>
+        </p>
+    </div>
+</a>
+
 		
 			<a href="/post/kind-setup/" class="catalogue-item">
     <div>
@@ -54,9 +73,9 @@
 
         <p>
             基于Ubuntu18.04的云原生应用开发环境搭建 &ndash; KinD 搭建Kubernetes多节点集群 KinD是Kubernetes in Docker的简称，它的主要目标是用于测试Kubernetes本身。也可以用于搭建本地Kubernetes开发环境，开发云原生应用。KinD可以运行在Windows，Macos和linux中。本文以Ubuntu为例，介绍kind的常用命令以及配置。
-前提条件  已安装Ubuntu18.04桌面版 已安装Docker  下载最新版KinD 当前kind版本为v0.9.0,可以使用以下命令下载并安装
+前提条件 已安装Ubuntu18.04桌面版 已安装Docker 下载最新版KinD 当前kind版本为v0.9.0,可以使用以下命令下载并安装
 curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64 chmod +x ./kind sudo mv ./kind /usr/local/bin/ Kind使用 创建集群 创建Kubernetes集群最简单的方式就是使用kind create cluster命令。执行后3-5分钟即可启动一个K8S集群。同时kind会更新${HOME}/.kube/config下的kubeconfig。默认集群名字为kind，也可通过&ndash;name 指定名称。
-常用命令  查看已创建的集群  kind get clusters  删除集群  kind delete cluster --name your-cluster 高级选项 多节点集群 kind最重要的功能之一是创建多节点集群，为了创建多个node，我们需要先创建一个yaml配置文件。如：
+常用命令 查看已创建的集群 kind get clusters 删除集群 kind delete cluster --name your-cluster 高级选项 多节点集群 kind最重要的功能之一是创建多节点集群，为了创建多个node，我们需要先创建一个yaml配置文件。如：
 # three node (two workers) cluster config kind: Cluster apiVersion: kind.
         </p>
     </div>
@@ -92,7 +111,7 @@ curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64 chmod +x ./k
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.817717863 &#43;0000 UTC m=&#43;0.221674331">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.134071224 &#43;0800 CST m=&#43;0.066217649">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

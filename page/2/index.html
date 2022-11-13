@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
     <head>
-	<meta name="generator" content="Hugo 0.74.3" />
+	<meta name="generator" content="Hugo 0.105.0">
 		
 		
 		<meta charset="UTF-8">
@@ -14,13 +14,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="/index.xml" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -38,6 +40,10 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
@@ -45,6 +51,22 @@
 
 
 	<div class="catalogue">
+		
+			<a href="/post/helm-tips/" class="catalogue-item">
+    <div>
+        <time datetime="2021-05-24 06:52:16 &#43;0000 UTC" class="catalogue-time">May 24, 2021</time>
+        <h2 class="catalogue-title">Helm Tips</h2>
+        <div class="catalogue-line"></div>
+
+        <p>
+            Helm 是最常用的 Kubernetes 包管理器之一。但实际应使用时却会面对各种复杂的问题，以下内容是对常见应用场景的简要总结：
+将 kubectl 部署的资源转为 Helm 资源 如果您的项目最初不是使用 Helm 进行资源管理且已经部署在线上运行，那么你可能需要将已有资源转换 Helm 资源。 否则直接运行 helm install 这时你将看见如下错误信息：
+Error: rendered manifests contain a resource that already exists. Unable to continue with install: 解决这个问题的方法很简单，只需要将对应的资源打上 Helm 的 Label 和 Annotation 即可:
+KIND=deployment NAME=my-app-staging RELEASE=staging NAMESPACE=default kubectl annotate $KIND $NAME meta.helm.sh/release-name=$RELEASE kubectl annotate $KIND $NAME meta.
+        </p>
+    </div>
+</a>
+
 		
 			<a href="/post/kubernetes-cni-performance/" class="catalogue-item">
     <div>
@@ -55,7 +77,7 @@
         <p>
             网络性能是影响 Kubernetes 集群与应用性能的重要指标之一。同时网络架构也是 Kubernetes 中较为复杂模块之一，Kubernetes 通过开放 CNI 接口，实现了网络插件即插即用功能，CNI 插件的实现方式是影响网络性能的最主要因素。目前主流的 CNI 插件包括：Flannel、Calico、Weave、Canal 和 Cilium 等。除 CNI 插件外，Kube-proxy 运行模式也是影响网络性能的重要因素之一。 Kubernetes 通过 Kube-proxy 提供了集群内负载均衡的能力，其内置方式有 Iptables 和 IPVS 等两种。在不同的场景下，CNI 和 Kube-proxy 都会对网络性能产生显著的影响。本文着重对 Kubernetes 网络性能测试的方法以及影响因素进行讲解和分析，不包含具体插件的性能比较。
 Kubernetes 网络通讯模式 在 Kubernetes 网络中，主要有以下几种通讯场景：
- 容器与容器之间的直接通信，通过本地回环实现，不通过网络插件协议栈，因此测试可以忽略。 Pod与Pod之间的通信，这是测试中的重点，同等条件(物理网卡带宽、CPU等)下性能主要受 CNI 插件影响。 Pod到Service之间的通信，会受到 CNI 与 Kube-proxy 的共同影响，因此也是测试的重点之一。 集群外部与内部组件之间的通信。集群外部访问的模式较多，链路较长，本文不做重点介绍。  除以上场景外，还需要考虑 POD 之间通讯是在同 NODE 与不同 NODE 等两种情况。如果再加上网络协议类型，那么我们需要考虑：通讯场景、协议、跨主机等三个维度的组合。以最常见的模式，我们可以得到以下8种组合：
+容器与容器之间的直接通信，通过本地回环实现，不通过网络插件协议栈，因此测试可以忽略。 Pod与Pod之间的通信，这是测试中的重点，同等条件(物理网卡带宽、CPU等)下性能主要受 CNI 插件影响。 Pod到Service之间的通信，会受到 CNI 与 Kube-proxy 的共同影响，因此也是测试的重点之一。 集群外部与内部组件之间的通信。集群外部访问的模式较多，链路较长，本文不做重点介绍。 除以上场景外，还需要考虑 POD 之间通讯是在同 NODE 与不同 NODE 等两种情况。如果再加上网络协议类型，那么我们需要考虑：通讯场景、协议、跨主机等三个维度的组合。以最常见的模式，我们可以得到以下8种组合：
         </p>
     </div>
 </a>
@@ -69,7 +91,7 @@ Kubernetes 网络通讯模式 在 Kubernetes 网络中，主要有以下几种�
 
         <p>
             前言 本文提供了一种基于 vscode 和 minikube 的快速搭建 Kubernetes 开发调试环境的方法。通过 devle 对 Kubernetes 各个组件进行远程调试。调试代码可以帮助你更深入地理解 Kubernetes 逻辑，更清晰的分析代码执行流程。
-准备阶段  Clone kubernetes 源代码 参考官方文档，将 Kubernetes clone 到默认 $GOPATH (Ubuntu 默认路径: ~/go)下  mkdir -p $GOPATH/src/k8s.io cd $GOPATH/src/k8s.io git clone https://github.com/kubernetes/kubernetes cd kubernetes # 以 1.19.x 分支为例我们签出源代码 git checkout release-1.19 # 或签出指定 tag 版本 git checkout v1.
+准备阶段 Clone kubernetes 源代码 参考官方文档，将 Kubernetes clone 到默认 $GOPATH (Ubuntu 默认路径: ~/go)下 mkdir -p $GOPATH/src/k8s.io cd $GOPATH/src/k8s.io git clone https://github.com/kubernetes/kubernetes cd kubernetes # 以 1.19.x 分支为例我们签出源代码 git checkout release-1.19 # 或签出指定 tag 版本 git checkout v1.19.3 Kubernetes 各个版本的编译对 golang 版本有依赖，例如编译 Kubernetes 1.
         </p>
     </div>
 </a>
@@ -77,14 +99,14 @@ Kubernetes 网络通讯模式 在 Kubernetes 网络中，主要有以下几种�
 		
 			<a href="/post/kubernetes-multi-tenancy-kiosk/" class="catalogue-item">
     <div>
-        <time datetime="2020-12-30 20:46:17 &#43;0800 &#43;0800" class="catalogue-time">December 30, 2020</time>
+        <time datetime="2020-12-30 20:46:17 &#43;0800 CST" class="catalogue-time">December 30, 2020</time>
         <h2 class="catalogue-title">Kiosk 多租户扩展-基本概念</h2>
         <div class="catalogue-line"></div>
 
         <p>
-            Kubernetes 多租户扩展  使用 Accounts 与 Account User 在共享的 Kubernetes 集群中区分租户 租户自助 Namespace 空间配置 Account Limits 账户配额保障服务质量与公平性 Namespace Templates 命名空间模板保证租户隔离与自助初始化 Namespace。 *多集群租户管理以共享集群池  Why kiosk Kubernetes 被设计为一个单租户平台，因此在单集群上实现多租户功能变得十分困难。然而，共享一个集群有很多优势，例如，资源利用率高，管理配置成本低，也可使租户更容易共享集群内部资源。
+            Kubernetes 多租户扩展 使用 Accounts 与 Account User 在共享的 Kubernetes 集群中区分租户 租户自助 Namespace 空间配置 Account Limits 账户配额保障服务质量与公平性 Namespace Templates 命名空间模板保证租户隔离与自助初始化 Namespace。 *多集群租户管理以共享集群池 Why kiosk Kubernetes 被设计为一个单租户平台，因此在单集群上实现多租户功能变得十分困难。然而，共享一个集群有很多优势，例如，资源利用率高，管理配置成本低，也可使租户更容易共享集群内部资源。
 当然，创建多租户 Kubernetes 集群的方法有很多，许多 Kubernetes 发行版也提出了他们自己的租户逻辑，然而却没有一个种轻量级的，可热拔插，并可定制化的解决方案。使管理员可以在任何标准的 Kubernetes 集群之上增加多租户能力。
-kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即用：可轻而易举地在任何已有集群中安装，适用于多种不同的场景 快速：着重于租户的自动化与自助服务 安全：为不同级别的租户隔离提供默认配置 可扩展：providing building blocks for higher-level Kubernetes platforms  架构 kiosk 的核心理念是使用 Kubernetes Namespace 作为隔离的工作空间，租户的应用可以运行在彼此隔离的空间中。为了降低管理成本，集群管理员应该配置 kiosk，然后它将成为一个租户可以在 Kubernetes 中自助配置 Namespace 的系统。
+kiosk 愿景 100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即用：可轻而易举地在任何已有集群中安装，适用于多种不同的场景 快速：着重于租户的自动化与自助服务 安全：为不同级别的租户隔离提供默认配置 可扩展：providing building blocks for higher-level Kubernetes platforms 架构 kiosk 的核心理念是使用 Kubernetes Namespace 作为隔离的工作空间，租户的应用可以运行在彼此隔离的空间中。为了降低管理成本，集群管理员应该配置 kiosk，然后它将成为一个租户可以在 Kubernetes 中自助配置 Namespace 的系统。
         </p>
     </div>
 </a>
@@ -92,7 +114,7 @@ kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即�
 		
 			<a href="/post/kubernetes-multi-tenancy-hnc/" class="catalogue-item">
     <div>
-        <time datetime="2020-12-28 20:34:37 &#43;0800 &#43;0800" class="catalogue-time">December 28, 2020</time>
+        <time datetime="2020-12-28 20:34:37 &#43;0800 CST" class="catalogue-time">December 28, 2020</time>
         <h2 class="catalogue-title">Kubernetes 层级命名空间 HNC - 3 Why</h2>
         <div class="catalogue-line"></div>
 
@@ -102,19 +124,6 @@ kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即�
 其次，重要也很巧妙的设计是，在控制面中命名空间是安全隔离的主要单元和身份标示。他们具有排他性，也就是说，命名空间中的对象属于且仅属于一个命名空间。如上所述，它将对象进行分组。这些分组的独立性使他们可以自然的关联一组相关的对象。 例如，命名空间被作为各种策略的默认目标，如 RoleBinding, Network Policies, 这也适用于 Kubernetes 扩展，如 Istio Polices。
 当然，在命名空间内应用策略也是可行的，但是 Kubernetes 对他的支持有限，且容易引起错误，同时在 Kuberenets 生态系统中容易使用户产生困惑。例如，RBAC 策略可以应用于目标对象的名称，但是这些策略很难以维护。
 再如，命名空间中的 Pod 可以使用同空间下的任何 Service Account 运行， 甚至是远超过 Pod 运行所需的特权。管理员在不借助 Validting Admission Contoller 或 OPA Gatekeeper 等高级技术情况下，通常无法直接限制。结果是，作用于 Service Account 的各种策略是弱策略，除非这些 Service Account 来自不同的命名空间。
-        </p>
-    </div>
-</a>
-
-		
-			<a href="/post/how-to-get-source-code-of-package/" class="catalogue-item">
-    <div>
-        <time datetime="2020-12-14 15:03:27 &#43;0000 UTC" class="catalogue-time">December 14, 2020</time>
-        <h2 class="catalogue-title">使用 apt 命令获取 Ubuntu 安装包源码</h2>
-        <div class="catalogue-line"></div>
-
-        <p>
-            <p>由于最近需要研究一个关于 Ubuntu 上 systemd 的问题，因此需要下载 systemd 的源代码。 一般源码下载可以在官网或者Github中下载，如 systemd。但是由于 linux 各个分发版本可能会给它们打上自己的补丁，因此我们需要从 Ubuntu 下载其源码包。在 Debian 或 Ubuntu 的系统中源码是文件版的软件发行包，因此我们可以使用 apt-get 或者 apt 命令下载其源码 (DEB 文件包)。</p>
         </p>
     </div>
 </a>
@@ -138,7 +147,7 @@ kiosk 愿景  100% 开源：使用 CNCF 兼容的 Apache 2.0 license 即插即�
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.813359383 &#43;0000 UTC m=&#43;0.217315938">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.132221179 &#43;0800 CST m=&#43;0.064367607">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

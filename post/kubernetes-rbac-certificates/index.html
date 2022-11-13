@@ -12,13 +12,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -36,10 +38,17 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
-	<div class="post">
+	
+
+
+        <div class="post">
 		<div class="post-info">
     <span>Written by</span>
         
@@ -62,67 +71,67 @@
 <ol>
 <li>生成用户私钥：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl genrsa -out user2.key <span style="color:#ae81ff">2048</span>
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl genrsa -out user2.key <span style="color:#ae81ff">2048</span>
+</span></span></code></pre></div><ol start="2">
 <li>使用私钥生成证书签名请求 CSR:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl req -new -key user2.key -out user2.csr -subj <span style="color:#e6db74">&#34;/CN=user2/O=group1/O=group2&#34;</span>
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl req -new -key user2.key -out user2.csr -subj <span style="color:#e6db74">&#34;/CN=user2/O=group1/O=group2&#34;</span>
+</span></span></code></pre></div><blockquote>
 <p>如果遇到错误信息 <code>Can't load /home/ubuntu/.rnd into RNG</code> 需先执行：</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl rand -writerand .rnd
-</code></pre></div><ol start="3">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl rand -writerand .rnd
+</span></span></code></pre></div><ol start="3">
 <li>提交 CSR 请求：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f - <span style="color:#e6db74">&lt;&lt;EOF
-</span><span style="color:#e6db74">apiVersion: certificates.k8s.io/v1beta1
-</span><span style="color:#e6db74">kind: CertificateSigningRequest
-</span><span style="color:#e6db74">metadata:
-</span><span style="color:#e6db74">  name: user2
-</span><span style="color:#e6db74">spec:
-</span><span style="color:#e6db74">  request: $(cat user2.csr | base64 | tr -d &#39;\n&#39;)
-</span><span style="color:#e6db74">  usages: [&#39;digital signature&#39;, &#39;key encipherment&#39;,
-</span><span style="color:#e6db74">    &#39;client auth&#39;]
-</span><span style="color:#e6db74">EOF</span>
-</code></pre></div><p>查看 CSR 请求：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl get csr
-NAME    AGE   SIGNERNAME                     REQUESTOR          CONDITION
-user2   75s   kubernetes.io/legacy-unknown   kubernetes-admin   Pending
-</code></pre></div><ol start="4">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f - <span style="color:#e6db74">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: certificates.k8s.io/v1beta1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: CertificateSigningRequest
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  name: user2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  request: $(cat user2.csr | base64 | tr -d &#39;\n&#39;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  usages: [&#39;digital signature&#39;, &#39;key encipherment&#39;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#39;client auth&#39;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><p>查看 CSR 请求：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get csr
+</span></span><span style="display:flex;"><span>NAME    AGE   SIGNERNAME                     REQUESTOR          CONDITION
+</span></span><span style="display:flex;"><span>user2   75s   kubernetes.io/legacy-unknown   kubernetes-admin   Pending
+</span></span></code></pre></div><ol start="4">
 <li>批准或拒绝 CSR：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl certificate approve user2
-kubectl certificate deny user2
-</code></pre></div><ol start="5">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl certificate approve user2
+</span></span><span style="display:flex;"><span>kubectl certificate deny user2
+</span></span></code></pre></div><ol start="5">
 <li>获取签发的证书并导出</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl get csr user2 -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.status.certificate}&#39;</span> | <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>base64 --decode &gt; user2.crt
-</code></pre></div><ol start="6">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get csr user2 -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.status.certificate}&#39;</span> | <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>base64 --decode &gt; user2.crt
+</span></span></code></pre></div><ol start="6">
 <li>添加到 KubeConfig</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl config set-credentials user2 --client-key<span style="color:#f92672">=</span>./user2.key --client-certificate<span style="color:#f92672">=</span>user2.crt --embed-certs<span style="color:#f92672">=</span>true
-
-kubectl config set-context user2 --cluster<span style="color:#f92672">=</span>kubernetes --user<span style="color:#f92672">=</span>user2
-
-kubectl config use-context user2
-</code></pre></div><h2 id="手动签发证书">手动签发证书</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl config set-credentials user2 --client-key<span style="color:#f92672">=</span>./user2.key --client-certificate<span style="color:#f92672">=</span>user2.crt --embed-certs<span style="color:#f92672">=</span>true
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>kubectl config set-context user2 --cluster<span style="color:#f92672">=</span>kubernetes --user<span style="color:#f92672">=</span>user2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>kubectl config use-context user2
+</span></span></code></pre></div><h2 id="手动签发证书">手动签发证书</h2>
 <ol>
 <li>生成用户私钥:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl genrsa -out user1.key <span style="color:#ae81ff">2048</span>
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl genrsa -out user1.key <span style="color:#ae81ff">2048</span>
+</span></span></code></pre></div><ol start="2">
 <li>使用私钥生成证书签名请求 CSR:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl req -new -key user1.key -out user1.csr -subj <span style="color:#e6db74">&#34;/CN=user1/O=group1/O=group2&#34;</span>
-</code></pre></div><ol start="3">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl req -new -key user1.key -out user1.csr -subj <span style="color:#e6db74">&#34;/CN=user1/O=group1/O=group2&#34;</span>
+</span></span></code></pre></div><ol start="3">
 <li>使用CA证书签发用户证书:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl x509 -req -in user1.csr <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    -CA /etc/kubernetes/pki/ca.crt <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    -CAkey /etc/kubernetes/pki/ca.key <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>    -set_serial <span style="color:#ae81ff">101</span> -extensions client -days <span style="color:#ae81ff">365</span> -outform PEM -out user1.crt
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl x509 -req -in user1.csr <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -CA /etc/kubernetes/pki/ca.crt <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -CAkey /etc/kubernetes/pki/ca.key <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -set_serial <span style="color:#ae81ff">101</span> -extensions client -days <span style="color:#ae81ff">365</span> -outform PEM -out user1.crt
+</span></span></code></pre></div><blockquote>
 <p>/etc/kubernetes/pki/ca.crt 为使用 kubeadm 安装 kubernetes 后默认生成的 CA 证书。</p>
 </blockquote>
 <ol start="4">
@@ -148,7 +157,7 @@ kubectl config use-context user2
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.778357023 &#43;0000 UTC m=&#43;0.182313512">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.10582489 &#43;0800 CST m=&#43;0.037971309">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

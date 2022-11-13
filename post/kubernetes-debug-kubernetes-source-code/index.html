@@ -12,13 +12,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -36,10 +38,17 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
-	<div class="post">
+	
+
+
+        <div class="post">
 		<div class="post-info">
     <span>Written by</span>
         
@@ -59,16 +68,16 @@
 <li>Clone kubernetes 源代码
 参考官方文档，将 Kubernetes clone 到默认 $GOPATH (Ubuntu 默认路径: <code>~/go</code>)下</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir -p $GOPATH/src/k8s.io
-cd $GOPATH/src/k8s.io
-git clone https://github.com/kubernetes/kubernetes
-cd kubernetes
-
-<span style="color:#75715e"># 以 1.19.x 分支为例我们签出源代码</span>
-git checkout release-1.19
-<span style="color:#75715e"># 或签出指定 tag 版本</span>
-git checkout v1.19.3
-</code></pre></div><p>Kubernetes 各个版本的编译对 golang 版本有依赖，例如编译 Kubernetes 1.19.0 及以上版本需要 golang 1.15.0 以上版本。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir -p $GOPATH/src/k8s.io
+</span></span><span style="display:flex;"><span>cd $GOPATH/src/k8s.io
+</span></span><span style="display:flex;"><span>git clone https://github.com/kubernetes/kubernetes
+</span></span><span style="display:flex;"><span>cd kubernetes
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 以 1.19.x 分支为例我们签出源代码</span>
+</span></span><span style="display:flex;"><span>git checkout release-1.19
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或签出指定 tag 版本</span>
+</span></span><span style="display:flex;"><span>git checkout v1.19.3
+</span></span></code></pre></div><p>Kubernetes 各个版本的编译对 golang 版本有依赖，例如编译 Kubernetes 1.19.0 及以上版本需要 golang 1.15.0 以上版本。</p>
 <ol start="2">
 <li>Vscode
 Vscode 安装方法请参考官网：
@@ -80,11 +89,11 @@ Vscode 安装方法请参考官网：
 <li>Minikube
 Minikube 是最常用的搭建本地kubernetes集群工具之一。可以用于学习以及本地开发环境。 我们使用以下命令启动一个 kubernets v1.19.3 的集群实例：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">minikube start --cpus<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> --memory<span style="color:#f92672">=</span><span style="color:#ae81ff">4096</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--image-mirror-country cn <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--registry-mirror<span style="color:#f92672">=</span>https://a3dw7d3s.mirror.aliyuncs.com  <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>--kubernetes-version<span style="color:#f92672">=</span>v1.19.3
-</code></pre></div><p>下载，搭建 minikube 方法可参考：
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>minikube start --cpus<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> --memory<span style="color:#f92672">=</span><span style="color:#ae81ff">4096</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--image-mirror-country cn <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--registry-mirror<span style="color:#f92672">=</span>https://a3dw7d3s.mirror.aliyuncs.com  <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--kubernetes-version<span style="color:#f92672">=</span>v1.19.3
+</span></span></code></pre></div><p>下载，搭建 minikube 方法可参考：
 <a href="https://developer.aliyun.com/article/221687">https://developer.aliyun.com/article/221687</a></p>
 <h2 id="手动启动调试">手动启动调试</h2>
 <p>动手调试前，我们需要了解一些 Kubernetes 组件启动的相关知识。Kubernetes 控制面组件中主要有三种启动方式：</p>
@@ -98,130 +107,130 @@ Minikube 是最常用的搭建本地kubernetes集群工具之一。可以用于�
 <ol>
 <li>首先我们需要编译带有调试信息的 kube-apiserver 二进制文件：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make all WHAT<span style="color:#f92672">=</span>cmd/kube-apiserver GOLDFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&#39;</span><span style="color:#e6db74">&#34;
-</span></code></pre></div><p>由于 Kubernets  完全的编译所需时间很长，因此可以使用 <code>WHAT</code> 参数选择需要编译的二进制。并且使用 <code>GOLDFLAGS=''</code>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>make all WHAT<span style="color:#f92672">=</span>cmd/kube-apiserver GOLDFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&#39;</span><span style="color:#e6db74">&#34;
+</span></span></span></code></pre></div><p>由于 Kubernets  完全的编译所需时间很长，因此可以使用 <code>WHAT</code> 参数选择需要编译的二进制。并且使用 <code>GOLDFLAGS=''</code>
 覆盖其默认的参数： -s disable symbol table, -w disable DWARF generation
 执行成功后，我们即可在 _output/bin/ 目录下找到所需的二进制文件。</p>
 <ol start="2">
 <li>复制 kube-apiserver 与 dlv 到 Minikube 中：</li>
 </ol>
 <p>以下命令可能跟 minikube 的启动方式有关，我们以 docker 方式为例，首先获取 minikube 的 ip 地址，并将所需的文件复制到容器中</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">export MINIKUBE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>minikube ip<span style="color:#66d9ef">)</span>
-
-scp -i ~/.minikube/machines/minikube/id_rsa _output/bin/kube-apiserver docker@$MINIKUBE_IP:
-
-scp -i ~/.minikube/machines/minikube/id_rsa ~/go/bin/dlv docker@$MINIKUBE_IP:
-</code></pre></div><ol start="3">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export MINIKUBE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>minikube ip<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>scp -i ~/.minikube/machines/minikube/id_rsa _output/bin/kube-apiserver docker@$MINIKUBE_IP:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>scp -i ~/.minikube/machines/minikube/id_rsa ~/go/bin/dlv docker@$MINIKUBE_IP:
+</span></span></code></pre></div><ol start="3">
 <li>查看 kube-apiserver 启动参数, 并停止</li>
 </ol>
 <p>以下命令需要在 minikube 容器中执行。通过查看 kube-apiserver 的 manifest 文件可以获取 kube-apiserver 启动的参数</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">minikube ssh sudo cat /etc/kubernetes/manifests/kube-apiserver.yaml
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">...
-<span style="color:#66d9ef">spec</span>:
-  <span style="color:#66d9ef">containers</span>:
-  - <span style="color:#66d9ef">command</span>:
-    - kube-apiserver
-    - --advertise-address=<span style="color:#ae81ff">192.168.49.2</span>
-    - --allow-privileged=<span style="color:#66d9ef">true</span>
-    - --authorization-mode=Node,RBAC
-    - --client-ca-file=/var/lib/minikube/certs/ca.crt
-... 省略
-</code></pre></div><p>在启动我们自己的 kube-apiserver 前，首先需要将系统中的 kube-apiserver停止。将 kube-apiserver.yaml 从 manifest 目录移除，静态 POD 即可被 kubelet 停止。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">minikube ssh <span style="color:#e6db74">&#39;sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml /etc/kubernetes/kube-apiserver.yaml&#39;</span>
-</code></pre></div><ol start="4">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>minikube ssh sudo cat /etc/kubernetes/manifests/kube-apiserver.yaml
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">command</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">kube-apiserver</span>
+</span></span><span style="display:flex;"><span>    - --<span style="color:#ae81ff">advertise-address=192.168.49.2</span>
+</span></span><span style="display:flex;"><span>    - --<span style="color:#ae81ff">allow-privileged=true</span>
+</span></span><span style="display:flex;"><span>    - --<span style="color:#ae81ff">authorization-mode=Node,RBAC</span>
+</span></span><span style="display:flex;"><span>    - --<span style="color:#ae81ff">client-ca-file=/var/lib/minikube/certs/ca.crt</span>
+</span></span><span style="display:flex;"><span>... <span style="color:#ae81ff">省略</span>
+</span></span></code></pre></div><p>在启动我们自己的 kube-apiserver 前，首先需要将系统中的 kube-apiserver停止。将 kube-apiserver.yaml 从 manifest 目录移除，静态 POD 即可被 kubelet 停止。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>minikube ssh <span style="color:#e6db74">&#39;sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml /etc/kubernetes/kube-apiserver.yaml&#39;</span>
+</span></span></code></pre></div><ol start="4">
 <li>dlv 方式启动 kube-apiserver</li>
 </ol>
 <p>启动 dlv 远程模式后，dlv 会等待 IDE 连接。注意,此处必须指定 API 版本 <code>--api-version=2</code>， 在 &ldquo;&ndash;&rdquo; 之后可以输入您自己所需的kube-apiserver 参数：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">minikube ssh <span style="color:#e6db74">&#39;sudo /home/docker/dlv exec /home/docker/kube-apiserver --headless --listen=:2345 --log --api-version=2 --  --advertise-address=1.2.3.4 ...&#39;</span> 
-</code></pre></div><ol start="5">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>minikube ssh <span style="color:#e6db74">&#39;sudo /home/docker/dlv exec /home/docker/kube-apiserver --headless --listen=:2345 --log --api-version=2 --  --advertise-address=1.2.3.4 ...&#39;</span> 
+</span></span></code></pre></div><ol start="5">
 <li>Vscode 连接远程调试连接 dlv</li>
 </ol>
 <p>启动 Vscode 后打开 kubernetes 目录。选择 &ldquo;run&rdquo;-&gt; &ldquo;Add Configuration&rdquo; 菜单后在 <code>launch.json</code> 的 configurations 节点下添加以下配置：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Connect to Kube-apiserver&#34;</span>,
-    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
-    <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;attach&#34;</span>,
-    <span style="color:#f92672">&#34;mode&#34;</span>: <span style="color:#e6db74">&#34;remote&#34;</span>,
-    <span style="color:#f92672">&#34;remotePath&#34;</span>: <span style="color:#e6db74">&#34;${workspaceFolder}&#34;</span>,
-    <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">2345</span>,
-    <span style="color:#f92672">&#34;host&#34;</span>: <span style="color:#e6db74">&#34;192.168.49.2&#34;</span>
-}
-</code></pre></div><p>接下来在 main 函数中增加一个断点，启动调试即可成功捕获到断点了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Connect to Kube-apiserver&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;go&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;request&#34;</span>: <span style="color:#e6db74">&#34;attach&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;mode&#34;</span>: <span style="color:#e6db74">&#34;remote&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;remotePath&#34;</span>: <span style="color:#e6db74">&#34;${workspaceFolder}&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">2345</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;host&#34;</span>: <span style="color:#e6db74">&#34;192.168.49.2&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>接下来在 main 函数中增加一个断点，启动调试即可成功捕获到断点了。</p>
 <h3 id="kubelet-调试">kubelet 调试</h3>
 <p>kubelet 调试过程与上面过程相似，我们只需要先得到 kubelet 的启动参数，然后停止 kubelet 服务即可。 我们先略去 kubelet 构建，复制等过程。直接获取其启动参数：</p>
 <ol>
 <li>使用 systemctl 获取 kubelet 的启动参数</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ minikube ssh sudo systemctl status kubelet
-...
-kubelet --bootstrap-kubeconfig<span style="color:#f92672">=</span>/etc/kubernetes/bootstrap-kubelet.conf --config<span style="color:#f92672">=</span>/var/lib/kubelet/config.yaml --container-runtime<span style="color:#f92672">=</span>docker --hostname-override<span style="color:#f92672">=</span>minikube --kubeconfig<span style="color:#f92672">=</span>/etc/kubernetes/kubelet.conf --node-ip<span style="color:#f92672">=</span>192.168.49.2 --pod-infra-container-image<span style="color:#f92672">=</span>registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.2
-...
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ minikube ssh sudo systemctl status kubelet
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>kubelet --bootstrap-kubeconfig<span style="color:#f92672">=</span>/etc/kubernetes/bootstrap-kubelet.conf --config<span style="color:#f92672">=</span>/var/lib/kubelet/config.yaml --container-runtime<span style="color:#f92672">=</span>docker --hostname-override<span style="color:#f92672">=</span>minikube --kubeconfig<span style="color:#f92672">=</span>/etc/kubernetes/kubelet.conf --node-ip<span style="color:#f92672">=</span>192.168.49.2 --pod-infra-container-image<span style="color:#f92672">=</span>registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.2
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><ol start="2">
 <li>停止 kubelet 服务</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">minikube ssh sudo systemctl stop kubelet
-</code></pre></div><h2 id="自动化过程">自动化过程</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>minikube ssh sudo systemctl stop kubelet
+</span></span></code></pre></div><h2 id="自动化过程">自动化过程</h2>
 <p>以上过程并不复杂，但是我们没有必要重复这些手动过程。通过 Vscode 的自定义task 我们可以自动化整个过程。</p>
 <ol>
 <li>首先，我们将上面的每个独立的步骤定义为一个 <code>shell</code> 命令。这个样我们就可以通过 Terminal -&gt; Run Task 执行这些步骤了。</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>,
-    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
-    <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;scp -i ~/.minikube/machines/minikube/id_rsa _output/bin/kube-apiserver docker@192.168.49.2:&#34;</span>
-}
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;scp -i ~/.minikube/machines/minikube/id_rsa _output/bin/kube-apiserver docker@192.168.49.2:&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol start="2">
 <li>然后，我们使用一个组合命令，将上面定义的步骤按照顺序执行。</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">        {
-            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Launch Kube-apiserver Debuger&#34;</span>,
-            <span style="color:#f92672">&#34;dependsOrder&#34;</span>: <span style="color:#e6db74">&#34;sequence&#34;</span>,
-            <span style="color:#f92672">&#34;dependsOn&#34;</span>: [<span style="color:#e6db74">&#34;build Kube-apiserver&#34;</span>, <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>, <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>,<span style="color:#e6db74">&#34;Stop kube-apiserver&#34;</span>,<span style="color:#e6db74">&#34;Start Kube-apiserver Debuger&#34;</span>]
-        }
-</code></pre></div><ol start="3">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Launch Kube-apiserver Debuger&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;dependsOrder&#34;</span>: <span style="color:#e6db74">&#34;sequence&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;dependsOn&#34;</span>: [<span style="color:#e6db74">&#34;build Kube-apiserver&#34;</span>, <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>, <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>,<span style="color:#e6db74">&#34;Stop kube-apiserver&#34;</span>,<span style="color:#e6db74">&#34;Start Kube-apiserver Debuger&#34;</span>]
+</span></span><span style="display:flex;"><span>        }
+</span></span></code></pre></div><ol start="3">
 <li>接下来，在执行调试任务前，我们只需要执行 <code>Launch Kube-apiserver Debuger</code> 任务即可在 minikube 中启动调试环境。</li>
 </ol>
 <p>完整的task.json定义参考如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;2.0.0&#34;</span>,
-    <span style="color:#f92672">&#34;tasks&#34;</span>: [
-        {
-            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Init dlv&#34;</span>,
-            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
-            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;scp -i ~/.minikube/machines/minikube/id_rsa ~/go/bin/dlv docker@192.168.49.2:&#34;</span>
-        },
-        {
-            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>,
-            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
-            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;scp -i ~/.minikube/machines/minikube/id_rsa _output/bin/kube-apiserver docker@192.168.49.2:&#34;</span>
-        },
-        {
-            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;build Kube-apiserver&#34;</span>,
-            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
-            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;make all WHAT=cmd/kube-apiserver GOLDFLAGS=&#39;&#39;&#34;</span>,
-            <span style="color:#f92672">&#34;group&#34;</span>: <span style="color:#e6db74">&#34;build&#34;</span>,
-            <span style="color:#f92672">&#34;problemMatcher&#34;</span>: [
-                <span style="color:#e6db74">&#34;$go&#34;</span>
-            ]
-        },
-        {
-            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Stop kube-apiserver&#34;</span>,
-            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
-            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;minikube ssh &#39;if [ -f /etc/kubernetes/manifests/kube-apiserver.yaml ];then sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml /etc/kubernetes/kube-apiserver.yaml;fi&#39;&#34;</span>
-        },
-        {
-            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Start Kube-apiserver Debuger&#34;</span>,
-            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
-            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;minikube ssh &#39;sudo /home/docker/dlv exec /home/docker/kube-apiserver --headless --listen=:2345 --log --api-version=2 -- -v=4 --advertise-address=192.168.49.2 --allow-privileged=true --authorization-mode=Node,RBAC --client-ca-file=/var/lib/minikube/certs/ca.crt --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota --enable-bootstrap-token-auth=true --etcd-cafile=/var/lib/minikube/certs/etcd/ca.crt --etcd-certfile=/var/lib/minikube/certs/apiserver-etcd-client.crt --etcd-keyfile=/var/lib/minikube/certs/apiserver-etcd-client.key --etcd-servers=https://192.168.49.2:2379 --insecure-port=0 --kubelet-client-certificate=/var/lib/minikube/certs/apiserver-kubelet-client.crt --kubelet-client-key=/var/lib/minikube/certs/apiserver-kubelet-client.key --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname --proxy-client-cert-file=/var/lib/minikube/certs/front-proxy-client.crt --proxy-client-key-file=/var/lib/minikube/certs/front-proxy-client.key --requestheader-allowed-names=front-proxy-client --requestheader-client-ca-file=/var/lib/minikube/certs/front-proxy-ca.crt --requestheader-extra-headers-prefix=X-Remote-Extra- --requestheader-group-headers=X-Remote-Group --requestheader-username-headers=X-Remote-User --secure-port=8443 --service-account-key-file=/var/lib/minikube/certs/sa.pub --service-cluster-ip-range=10.96.0.0/12 --tls-cert-file=/var/lib/minikube/certs/apiserver.crt --tls-private-key-file=/var/lib/minikube/certs/apiserver.key&#39;&#34;</span>
-        },
-        {
-            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Launch Kube-apiserver Debuger&#34;</span>,
-            <span style="color:#f92672">&#34;dependsOrder&#34;</span>: <span style="color:#e6db74">&#34;sequence&#34;</span>,
-            <span style="color:#f92672">&#34;dependsOn&#34;</span>: [<span style="color:#e6db74">&#34;build Kube-apiserver&#34;</span>, <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>, <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>,<span style="color:#e6db74">&#34;Stop kube-apiserver&#34;</span>,<span style="color:#e6db74">&#34;Start Kube-apiserver Debuger&#34;</span>]
-        }
-    ]
-}
-</code></pre></div><h2 id="最后">最后</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;2.0.0&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;tasks&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Init dlv&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;scp -i ~/.minikube/machines/minikube/id_rsa ~/go/bin/dlv docker@192.168.49.2:&#34;</span>
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;scp -i ~/.minikube/machines/minikube/id_rsa _output/bin/kube-apiserver docker@192.168.49.2:&#34;</span>
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;build Kube-apiserver&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;make all WHAT=cmd/kube-apiserver GOLDFLAGS=&#39;&#39;&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;group&#34;</span>: <span style="color:#e6db74">&#34;build&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;problemMatcher&#34;</span>: [
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;$go&#34;</span>
+</span></span><span style="display:flex;"><span>            ]
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Stop kube-apiserver&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;minikube ssh &#39;if [ -f /etc/kubernetes/manifests/kube-apiserver.yaml ];then sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml /etc/kubernetes/kube-apiserver.yaml;fi&#39;&#34;</span>
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Start Kube-apiserver Debuger&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;shell&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;command&#34;</span>: <span style="color:#e6db74">&#34;minikube ssh &#39;sudo /home/docker/dlv exec /home/docker/kube-apiserver --headless --listen=:2345 --log --api-version=2 -- -v=4 --advertise-address=192.168.49.2 --allow-privileged=true --authorization-mode=Node,RBAC --client-ca-file=/var/lib/minikube/certs/ca.crt --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota --enable-bootstrap-token-auth=true --etcd-cafile=/var/lib/minikube/certs/etcd/ca.crt --etcd-certfile=/var/lib/minikube/certs/apiserver-etcd-client.crt --etcd-keyfile=/var/lib/minikube/certs/apiserver-etcd-client.key --etcd-servers=https://192.168.49.2:2379 --insecure-port=0 --kubelet-client-certificate=/var/lib/minikube/certs/apiserver-kubelet-client.crt --kubelet-client-key=/var/lib/minikube/certs/apiserver-kubelet-client.key --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname --proxy-client-cert-file=/var/lib/minikube/certs/front-proxy-client.crt --proxy-client-key-file=/var/lib/minikube/certs/front-proxy-client.key --requestheader-allowed-names=front-proxy-client --requestheader-client-ca-file=/var/lib/minikube/certs/front-proxy-ca.crt --requestheader-extra-headers-prefix=X-Remote-Extra- --requestheader-group-headers=X-Remote-Group --requestheader-username-headers=X-Remote-User --secure-port=8443 --service-account-key-file=/var/lib/minikube/certs/sa.pub --service-cluster-ip-range=10.96.0.0/12 --tls-cert-file=/var/lib/minikube/certs/apiserver.crt --tls-private-key-file=/var/lib/minikube/certs/apiserver.key&#39;&#34;</span>
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;label&#34;</span>: <span style="color:#e6db74">&#34;Launch Kube-apiserver Debuger&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;dependsOrder&#34;</span>: <span style="color:#e6db74">&#34;sequence&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;dependsOn&#34;</span>: [<span style="color:#e6db74">&#34;build Kube-apiserver&#34;</span>, <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>, <span style="color:#e6db74">&#34;Copy Kube-apiserver&#34;</span>,<span style="color:#e6db74">&#34;Stop kube-apiserver&#34;</span>,<span style="color:#e6db74">&#34;Start Kube-apiserver Debuger&#34;</span>]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="最后">最后</h2>
 <p>以上过程使用了 Vscode, Minikube 等工具快速搭建了一个 kubernetes 源码开发调试环境。除以上基本方法外，我们可以进一步自动化整个过程。例如，利用 preLaunchTask 属性和 problemMatcher 属性配置一键 debug。也可以使用变量替换 minikube 的 ip地址。基于以上方法，我们也可以快速切换 kubernetes 版本而无需再本地或远程执行整个 kubernetes 搭建过程。工欲善其事必先利其器，希望以上方法对您的 Kubernetes 源码学习过程中有所帮助。</p>
 
 
@@ -240,7 +249,7 @@ kubelet --bootstrap-kubeconfig<span style="color:#f92672">=</span>/etc/kubernete
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.772909555 &#43;0000 UTC m=&#43;0.176866167">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.116151964 &#43;0800 CST m=&#43;0.048298384">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

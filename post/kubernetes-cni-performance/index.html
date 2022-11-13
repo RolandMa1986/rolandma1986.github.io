@@ -12,13 +12,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -36,10 +38,17 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
-	<div class="post">
+	
+
+
+        <div class="post">
 		<div class="post-info">
     <span>Written by</span>
         
@@ -108,70 +117,70 @@
 <h2 id="基于-qperf-的测试">基于 qperf 的测试</h2>
 <h3 id="部署-qperf-pod">部署 qperf Pod</h3>
 <p>以下脚本启动了一个 qperf-server，并监听了 4000 端口。我们使用 nodeSelector 将服务运行在 node1 节点上：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">cat &lt;&lt; EOF | kubectl apply -f -
-<span style="color:#66d9ef">apiVersion</span>: v1
-<span style="color:#66d9ef">kind</span>: Pod
-<span style="color:#66d9ef">metadata</span>:
-  <span style="color:#66d9ef">name</span>: qperf-server
-  <span style="color:#66d9ef">namespace</span>: default
-  <span style="color:#66d9ef">labels</span>:
-    <span style="color:#66d9ef">app</span>: qperf
-<span style="color:#66d9ef">spec</span>:
-  <span style="color:#66d9ef">containers</span>:
-  - <span style="color:#66d9ef">image</span>: <span style="color:#e6db74">&#34;arjanschaaf/centos-qperf&#34;</span>
-    <span style="color:#66d9ef">args</span>: [<span style="color:#e6db74">&#34;-lp&#34;</span>, <span style="color:#e6db74">&#34;4000&#34;</span>]
-    <span style="color:#66d9ef">imagePullPolicy</span>: <span style="color:#e6db74">&#34;IfNotPresent&#34;</span>
-    <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;qperf-server&#34;</span>
-    <span style="color:#66d9ef">ports</span>:
-    - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">4000</span>
-      <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;p1udp&#34;</span>
-      <span style="color:#66d9ef">protocol</span>: UDP
-    - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">4000</span>
-      <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;p1tcp&#34;</span>
-      <span style="color:#66d9ef">protocol</span>: TCP
-    - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">4001</span>
-      <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;p2tcp&#34;</span>
-      <span style="color:#66d9ef">protocol</span>: TCP
-    - <span style="color:#66d9ef">containerPort</span>: <span style="color:#ae81ff">4001</span>
-      <span style="color:#66d9ef">name</span>: <span style="color:#e6db74">&#34;p2udp&#34;</span>
-      <span style="color:#66d9ef">protocol</span>: UDP
-  <span style="color:#66d9ef">restartPolicy</span>: Always
-  <span style="color:#66d9ef">nodeSelector</span>:
-    <span style="color:#66d9ef">kubernetes.io/hostname</span>: node1
-EOF
-</code></pre></div><h3 id="部署-qperf-服务">部署 qperf 服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">cat &lt;&lt; EOF | kubectl apply -f -</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">qperf-server</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">qperf</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#34;arjanschaaf/centos-qperf&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">args</span>: [<span style="color:#e6db74">&#34;-lp&#34;</span>, <span style="color:#e6db74">&#34;4000&#34;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#e6db74">&#34;IfNotPresent&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;qperf-server&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">4000</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;p1udp&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">UDP</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">4000</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;p1tcp&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">4001</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;p2tcp&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">4001</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;p2udp&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">UDP</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">restartPolicy</span>: <span style="color:#ae81ff">Always</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nodeSelector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kubernetes.io/hostname</span>: <span style="color:#ae81ff">node1</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">EOF</span>
+</span></span></code></pre></div><h3 id="部署-qperf-服务">部署 qperf 服务</h3>
 <p>如果需要针对服务进行测试，我们可以使用以下脚本暴露服务。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">cat &lt;&lt; EOF | kubectl apply -f -
-<span style="color:#66d9ef">apiVersion</span>: v1
-<span style="color:#66d9ef">kind</span>: Service
-<span style="color:#66d9ef">metadata</span>:
-  <span style="color:#66d9ef">labels</span>:
-    <span style="color:#66d9ef">app</span>: perf
-<span style="color:#66d9ef">spec</span>:
-  <span style="color:#66d9ef">ports</span>:
-  - <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">4000</span>
-    <span style="color:#66d9ef">protocol</span>: TCP
-    <span style="color:#66d9ef">targetPort</span>: <span style="color:#ae81ff">4000</span>
-  - <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">4000</span>
-    <span style="color:#66d9ef">protocol</span>: UDP
-    <span style="color:#66d9ef">targetPort</span>: <span style="color:#ae81ff">4000</span>
-  - <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">4001</span>
-    <span style="color:#66d9ef">protocol</span>: TCP
-    <span style="color:#66d9ef">targetPort</span>: <span style="color:#ae81ff">4001</span>
-  - <span style="color:#66d9ef">port</span>: <span style="color:#ae81ff">4001</span>
-    <span style="color:#66d9ef">protocol</span>: UDP
-    <span style="color:#66d9ef">targetPort</span>: <span style="color:#ae81ff">4001</span>
-  <span style="color:#66d9ef">selector</span>:
-    <span style="color:#66d9ef">app</span>: perf
-  <span style="color:#66d9ef">type</span>: ClusterIP
-EOF
-</code></pre></div><h3 id="执行测试">执行测试</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">cat &lt;&lt; EOF | kubectl apply -f -</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">perf</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">4000</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">4000</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">4000</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">UDP</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">4000</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">4001</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">4001</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">4001</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">UDP</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">4001</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">perf</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">ClusterIP</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">EOF</span>
+</span></span></code></pre></div><h3 id="执行测试">执行测试</h3>
 <p>当我们需要测试跨节点 Pod 的带宽与延迟时，我们在命令中使用了 tcp_bw tcp_lat 等参数，并指定在 Node2 上运行 qperf-client：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 获取 Pod IP</span>
-serverip<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>kubectl get pod qperf-server -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{ .status.podIP }&#39;</span><span style="color:#e6db74">`</span>
-kubectl run qperf-client -it --rm --image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;arjanschaaf/centos-qperf&#34;</span> --overrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{ &#34;spec&#34;: { &#34;template&#34;: { &#34;spec&#34;: { &#34;nodeSelector&#34;: {&#34;kubernetes.io/hostname&#34;: &#34;node2&#34; } } } } }&#39;</span> -- -v $serverip -lp <span style="color:#ae81ff">4000</span> -ip <span style="color:#ae81ff">4001</span> -t <span style="color:#ae81ff">120</span> tcp_bw tcp_lat
-</code></pre></div><p>测试结果输出如下：</p>
-<pre><code>tcp_bw
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 获取 Pod IP</span>
+</span></span><span style="display:flex;"><span>serverip<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>kubectl get pod qperf-server -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{ .status.podIP }&#39;</span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>kubectl run qperf-client -it --rm --image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;arjanschaaf/centos-qperf&#34;</span> --overrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{ &#34;spec&#34;: { &#34;template&#34;: { &#34;spec&#34;: { &#34;nodeSelector&#34;: {&#34;kubernetes.io/hostname&#34;: &#34;node2&#34; } } } } }&#39;</span> -- -v $serverip -lp <span style="color:#ae81ff">4000</span> -ip <span style="color:#ae81ff">4001</span> -t <span style="color:#ae81ff">120</span> tcp_bw tcp_lat
+</span></span></code></pre></div><p>测试结果输出如下：</p>
+<pre tabindex="0"><code>tcp_bw
     bw              =   4.04 GB/sec
     msg_rate        =   61.7 K/sec
     port            =  4,001 
@@ -188,7 +197,7 @@ tcp_lat:
     loc_cpus_used  =    121 % cpus
     rem_cpus_used  =    121 % cpus 
 </code></pre><p>如需测试 Pod 到服务的网路带宽，我们仅需要替换服务 IP 参数：</p>
-<pre><code>serverip=`kubectl get svc qperf-server -o jsonpath='{ .spec.clusterIP }'`
+<pre tabindex="0"><code>serverip=`kubectl get svc qperf-server -o jsonpath=&#39;{ .spec.clusterIP }&#39;`
 </code></pre><h2 id="最后">最后</h2>
 <p>上面内容简略的分析了 Kubernetes 下网络性能测试的基本场景以及常用指标。并简要的介绍了几款网络性能测试工具。最后演示了如何使用 qperf 进行网络测试。选择合适的场景及指标是性能测试工作的重点，在网络性能的优化以及插件选择过程中都需要以上数据的支撑。</p>
 
@@ -208,7 +217,7 @@ tcp_lat:
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.770482748 &#43;0000 UTC m=&#43;0.174439246">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.106846313 &#43;0800 CST m=&#43;0.038992736">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

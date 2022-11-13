@@ -12,13 +12,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -36,10 +38,17 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
-	<div class="post">
+	
+
+
+        <div class="post">
 		<div class="post-info">
     <span>Written by</span>
         
@@ -56,7 +65,7 @@
 <h2 id="收集信息">收集信息</h2>
 <h3 id="查看-node-状态">查看 Node 状态</h3>
 <p>使用 describe 命令后可以看到，该机器当前 CPU/Memery/Disk 空间充足，但是 container runtime 状态未返回。</p>
-<pre><code class="language-log" data-lang="log">$ kubectl describe node node3
+<pre tabindex="0"><code class="language-log" data-lang="log">$ kubectl describe node node3
 Name:               node3
 Roles:              worker
 ...
@@ -87,7 +96,7 @@ System Info:
   Kube-Proxy Version:           v1.18.6
 </code></pre><h3 id="日志分析">日志分析</h3>
 <p>在获取集群基本信息后，怀疑是由于 Docker 导致的，但是由于一些其他原因导致未能收集到 docker 日志。</p>
-<pre><code class="language-log" data-lang="log">$ journalctl -xef -u kubelet
+<pre tabindex="0"><code class="language-log" data-lang="log">$ journalctl -xef -u kubelet
 # 已去除部分不相关信息
 15:16:15 node3 kubelet[14756]: I1207 15:16:15.718067   14756 server.go:417] Version: v1.18.6
 ...
@@ -99,7 +108,7 @@ System Info:
 15:16:22 node3 kubelet[14756]: I1207 15:16:22.529963   14756 kubelet.go:1822] Starting kubelet main sync loop.
 15:16:22 node3 kubelet[14756]: E1207 15:16:22.530073   14756 kubelet.go:1846] skipping pod synchronization - [container runtime status check may not have completed yet, PLEG is not healthy: pleg has yet to be successful]
 ...
-15:16:23 node3 kubelet[14756]: F1207 15:16:23.071262   14756 kubelet.go:1384] Failed to start ContainerManager failed to build map of initial containers from runtime: no PodsandBox found with Id 'd0831a4288e261b5e3a5643f4a36bb2162282262fba671a682159494dfcd6f56'
+15:16:23 node3 kubelet[14756]: F1207 15:16:23.071262   14756 kubelet.go:1384] Failed to start ContainerManager failed to build map of initial containers from runtime: no PodsandBox found with Id &#39;d0831a4288e261b5e3a5643f4a36bb2162282262fba671a682159494dfcd6f56&#39;
 15:16:23 node3 systemd[1]: kubelet.service: main process exited, code=exited, status=255/n/a
 15:16:23 node3 systemd[1]: Unit kubelet.service entered failed state.
 15:16:23 node3 systemd[1]: kubelet.service failed.
@@ -112,35 +121,35 @@ System Info:
 <p><em>PLEG is not healthy</em> 是最常见的导致 NodeNotReady 的原因之一， 我们稍后再详细分析。然而导致 Kubelet 启动失败并退出的直接原因是 &ldquo;Failed to start ContainerManager&rdquo;, 即容器管理器启动失败。</p>
 <h2 id="错误信息代码定位">错误信息代码定位</h2>
 <p>使用 &ldquo;no PodsandBox found with Id&rdquo; 关键字，直接搜索源码我们很容易定位到位于 Container Manager 中的以下方法：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// # pkg/kubelet/cm/container_manager_linux.go
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">buildContainerMapFromRuntime</span>(<span style="color:#a6e22e">runtimeService</span> <span style="color:#a6e22e">internalapi</span>.<span style="color:#a6e22e">RuntimeService</span>) (<span style="color:#a6e22e">containermap</span>.<span style="color:#a6e22e">ContainerMap</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">podSandboxMap</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>)
-	<span style="color:#a6e22e">podSandboxList</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">runtimeService</span>.<span style="color:#a6e22e">ListPodSandbox</span>(<span style="color:#66d9ef">nil</span>)
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">podSandboxList</span> {
-		<span style="color:#a6e22e">podSandboxMap</span>[<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Id</span>] = <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Metadata</span>.<span style="color:#a6e22e">Uid</span>
-	}
-
-	<span style="color:#a6e22e">containerMap</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">containermap</span>.<span style="color:#a6e22e">NewContainerMap</span>()
-	<span style="color:#a6e22e">containerList</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">runtimeService</span>.<span style="color:#a6e22e">ListContainers</span>(<span style="color:#66d9ef">nil</span>)
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">containerList</span> {
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">exists</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">podSandboxMap</span>[<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">PodSandboxId</span>]; !<span style="color:#a6e22e">exists</span> {
-			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;no PodsandBox found with Id &#39;%s&#39;&#34;</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">PodSandboxId</span>)
-		}
-		<span style="color:#a6e22e">containerMap</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">podSandboxMap</span>[<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">PodSandboxId</span>], <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Metadata</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Id</span>)
-	}
-
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">containerMap</span>, <span style="color:#66d9ef">nil</span>
-}
-
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cm</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">containerManagerImpl</span>) <span style="color:#a6e22e">Start</span>(<span style="color:#f92672">...</span>) ) <span style="color:#66d9ef">error</span> {
-<span style="color:#f92672">...</span>
-	<span style="color:#75715e">// Initialize CPU manager
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">utilfeature</span>.<span style="color:#a6e22e">DefaultFeatureGate</span>.<span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">kubefeatures</span>.<span style="color:#a6e22e">CPUManager</span>) {
-        <span style="color:#a6e22e">containerMap</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">buildContainerMapFromRuntime</span>(<span style="color:#a6e22e">runtimeService</span>)
-    <span style="color:#f92672">...</span>
-    }
-}
-</code></pre></div><p>以上代码过程比较直接：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#75715e">// # pkg/kubelet/cm/container_manager_linux.go
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">buildContainerMapFromRuntime</span>(<span style="color:#a6e22e">runtimeService</span> <span style="color:#a6e22e">internalapi</span>.<span style="color:#a6e22e">RuntimeService</span>) (<span style="color:#a6e22e">containermap</span>.<span style="color:#a6e22e">ContainerMap</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">podSandboxMap</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">podSandboxList</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">runtimeService</span>.<span style="color:#a6e22e">ListPodSandbox</span>(<span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">podSandboxList</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">podSandboxMap</span>[<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Id</span>] = <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Metadata</span>.<span style="color:#a6e22e">Uid</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">containerMap</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">containermap</span>.<span style="color:#a6e22e">NewContainerMap</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">containerList</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">runtimeService</span>.<span style="color:#a6e22e">ListContainers</span>(<span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">containerList</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">exists</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">podSandboxMap</span>[<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">PodSandboxId</span>]; !<span style="color:#a6e22e">exists</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;no PodsandBox found with Id &#39;%s&#39;&#34;</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">PodSandboxId</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">containerMap</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">podSandboxMap</span>[<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">PodSandboxId</span>], <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Metadata</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Id</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">containerMap</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cm</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">containerManagerImpl</span>) <span style="color:#a6e22e">Start</span>(<span style="color:#f92672">...</span>) ) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Initialize CPU manager
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">utilfeature</span>.<span style="color:#a6e22e">DefaultFeatureGate</span>.<span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">kubefeatures</span>.<span style="color:#a6e22e">CPUManager</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">containerMap</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">buildContainerMapFromRuntime</span>(<span style="color:#a6e22e">runtimeService</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>以上代码过程比较直接：</p>
 <ol>
 <li>首先 Kubelet 启动过程中会调用 ContainerManager.Start() 方法，用于启动容器管理器</li>
 <li>当启用 CPU Manager 时，CPU Manager 首先获取当前 Node 上已经存在的容器(v1.8 以后默认为开启状态)</li>
@@ -153,156 +162,156 @@ System Info:
 <ol>
 <li>创建一个 Deployment， 并查看POD状态</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create deployment nginxx --image<span style="color:#f92672">=</span>nginx:latest
-$ kubectl get pod 
-NAME                           READY   STATUS    RESTARTS   AGE
-nginxx-7664b4dd7-db8zt         1/1     Running   <span style="color:#ae81ff">0</span>          3m16s
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ kubectl create deployment nginxx --image<span style="color:#f92672">=</span>nginx:latest
+</span></span><span style="display:flex;"><span>$ kubectl get pod 
+</span></span><span style="display:flex;"><span>NAME                           READY   STATUS    RESTARTS   AGE
+</span></span><span style="display:flex;"><span>nginxx-7664b4dd7-db8zt         1/1     Running   <span style="color:#ae81ff">0</span>          3m16s
+</span></span></code></pre></div><ol start="2">
 <li>使用 docker 命令查看启动的容器， 这里我们使用了 lable 过滤条件</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker ps -f <span style="color:#e6db74">&#34;label=io.kubernetes.pod.name=nginxx-7664b4dd7-db8zt&#34;</span>
-CONTAINER ID    IMAGE   COMMAND                  CREATED             STATUS              PORTS               NAMES
-3109651451ed    nginx   <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">5</span> minutes ago       Up <span style="color:#ae81ff">5</span> minutes k8s_nginx_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_0
-3a26e144d020    pause:3.2   <span style="color:#e6db74">&#34;/pause&#34;</span>             <span style="color:#ae81ff">6</span> minutes ago       Up <span style="color:#ae81ff">6</span> minutes k8s_POD_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_0
-</code></pre></div><ol start="3">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ docker ps -f <span style="color:#e6db74">&#34;label=io.kubernetes.pod.name=nginxx-7664b4dd7-db8zt&#34;</span>
+</span></span><span style="display:flex;"><span>CONTAINER ID    IMAGE   COMMAND                  CREATED             STATUS              PORTS               NAMES
+</span></span><span style="display:flex;"><span>3109651451ed    nginx   <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">5</span> minutes ago       Up <span style="color:#ae81ff">5</span> minutes k8s_nginx_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_0
+</span></span><span style="display:flex;"><span>3a26e144d020    pause:3.2   <span style="color:#e6db74">&#34;/pause&#34;</span>             <span style="color:#ae81ff">6</span> minutes ago       Up <span style="color:#ae81ff">6</span> minutes k8s_POD_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_0
+</span></span></code></pre></div><ol start="3">
 <li>由于 Kubelet 会不断的执行 reconcil 过程，使容器状态与目标状态保持一致。因此在删除 pause 容器时，我们先停止 kubelet 再删除。</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo systemctl stop kubelet
-
-<span style="color:#75715e"># 删除 docker 容器</span>
-$ docker rm -f 3a26e144d020
-<span style="color:#75715e"># 重启 kubelet</span>
-$ sudo systemctl start kubelet
-</code></pre></div><p>然而，并没有像我们想象中的那样简单，问题不能重现。kubelet 正常启动成功。从 docker 命令中我们可以看到，docker 将原来的容器停止，并创建一组 POD 名相同的容器：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker ps -f <span style="color:#e6db74">&#34;label=io.kubernetes.pod.name=nginxx-7664b4dd7-db8zt&#34;</span>
-CONTAINER ID        IMAGE    COMMAND                  CREATED             STATUS                      PORTS               NAMES
-9ed770770949        nginx    <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">14</span> seconds ago      Up <span style="color:#ae81ff">13</span> seconds     k8s_nginx_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_1
-a4f3dede3687        pause:3.2   <span style="color:#e6db74">&#34;/pause&#34;</span>                 <span style="color:#ae81ff">18</span> seconds ago      Up <span style="color:#ae81ff">16</span> seconds  k8s_POD_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_0
-3109651451ed        nginx    <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">29</span> minutes ago      Exited <span style="color:#f92672">(</span>0<span style="color:#f92672">)</span> <span style="color:#ae81ff">17</span> seconds ago 8s_nginx_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_0
-</code></pre></div><h2 id="pod-中的容器如何关联">POD 中的容器如何关联？</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo systemctl stop kubelet
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 删除 docker 容器</span>
+</span></span><span style="display:flex;"><span>$ docker rm -f 3a26e144d020
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 重启 kubelet</span>
+</span></span><span style="display:flex;"><span>$ sudo systemctl start kubelet
+</span></span></code></pre></div><p>然而，并没有像我们想象中的那样简单，问题不能重现。kubelet 正常启动成功。从 docker 命令中我们可以看到，docker 将原来的容器停止，并创建一组 POD 名相同的容器：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ docker ps -f <span style="color:#e6db74">&#34;label=io.kubernetes.pod.name=nginxx-7664b4dd7-db8zt&#34;</span>
+</span></span><span style="display:flex;"><span>CONTAINER ID        IMAGE    COMMAND                  CREATED             STATUS                      PORTS               NAMES
+</span></span><span style="display:flex;"><span>9ed770770949        nginx    <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">14</span> seconds ago      Up <span style="color:#ae81ff">13</span> seconds     k8s_nginx_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_1
+</span></span><span style="display:flex;"><span>a4f3dede3687        pause:3.2   <span style="color:#e6db74">&#34;/pause&#34;</span>                 <span style="color:#ae81ff">18</span> seconds ago      Up <span style="color:#ae81ff">16</span> seconds  k8s_POD_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_0
+</span></span><span style="display:flex;"><span>3109651451ed        nginx    <span style="color:#e6db74">&#34;/docker-entrypoint.…&#34;</span>   <span style="color:#ae81ff">29</span> minutes ago      Exited <span style="color:#f92672">(</span>0<span style="color:#f92672">)</span> <span style="color:#ae81ff">17</span> seconds ago 8s_nginx_nginxx-7664b4dd7-db8zt_default_9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e_0
+</span></span></code></pre></div><h2 id="pod-中的容器如何关联">POD 中的容器如何关联？</h2>
 <p>经过一次失败的尝试后，我们继续研究容器与 POD 的关系。由于经常使用 docker， 因此第一反应是容器通过 Label 进行关联的。我们首先使用 docker inspect 查看相关容器的 Label。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker inspect  9ed770770949 | jq -r <span style="color:#e6db74">&#39;.[0].Config.Labels&#39;</span>
-<span style="color:#f92672">{</span>
-    ...
-  <span style="color:#e6db74">&#34;io.kubernetes.container.name&#34;</span>: <span style="color:#e6db74">&#34;nginx&#34;</span>,
-  <span style="color:#e6db74">&#34;io.kubernetes.docker.type&#34;</span>: <span style="color:#e6db74">&#34;container&#34;</span>,
-  <span style="color:#e6db74">&#34;io.kubernetes.pod.name&#34;</span>: <span style="color:#e6db74">&#34;nginxx-7664b4dd7-db8zt&#34;</span>,
-  <span style="color:#e6db74">&#34;io.kubernetes.pod.namespace&#34;</span>: <span style="color:#e6db74">&#34;default&#34;</span>,
-  <span style="color:#e6db74">&#34;io.kubernetes.pod.uid&#34;</span>: <span style="color:#e6db74">&#34;9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e&#34;</span>,
-  <span style="color:#e6db74">&#34;io.kubernetes.sandbox.id&#34;</span>: <span style="color:#e6db74">&#34;a4f3dede368715fe288e4b079d1b2a12e0fe1f5dc1f6602ab0d06bfa4851ccdf&#34;</span>
-  ...
-<span style="color:#f92672">}</span>
-
-$ docker inspect  a4f3dede3687 | jq -r <span style="color:#e6db74">&#39;.[0].Config.Labels&#39;</span>
-<span style="color:#f92672">{</span>
-...
-  <span style="color:#e6db74">&#34;io.kubernetes.container.name&#34;</span>: <span style="color:#e6db74">&#34;POD&#34;</span>,
-  <span style="color:#e6db74">&#34;io.kubernetes.docker.type&#34;</span>: <span style="color:#e6db74">&#34;podsandbox&#34;</span>,
-  <span style="color:#e6db74">&#34;io.kubernetes.pod.name&#34;</span>: <span style="color:#e6db74">&#34;nginxx-7664b4dd7-db8zt&#34;</span>,
-  <span style="color:#e6db74">&#34;io.kubernetes.pod.namespace&#34;</span>: <span style="color:#e6db74">&#34;default&#34;</span>,
-  <span style="color:#e6db74">&#34;io.kubernetes.pod.uid&#34;</span>: <span style="color:#e6db74">&#34;9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e&#34;</span>,
-...
-<span style="color:#f92672">}</span>
-</code></pre></div><p>对于 pause 容器与工作容器，他们的 &ldquo;io.kubernetes.pod.*&rdquo; 属性均相同，然而对于 pause 容器，其 <code>io.kubernetes.docker.type</code> 为<code>podsandbox</code> 而工作容器为 <code>container</code>。 为进步验证我们猜想。我们找到 ListContainer 的实现。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ docker inspect  9ed770770949 | jq -r <span style="color:#e6db74">&#39;.[0].Config.Labels&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.container.name&#34;</span>: <span style="color:#e6db74">&#34;nginx&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.docker.type&#34;</span>: <span style="color:#e6db74">&#34;container&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.pod.name&#34;</span>: <span style="color:#e6db74">&#34;nginxx-7664b4dd7-db8zt&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.pod.namespace&#34;</span>: <span style="color:#e6db74">&#34;default&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.pod.uid&#34;</span>: <span style="color:#e6db74">&#34;9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.sandbox.id&#34;</span>: <span style="color:#e6db74">&#34;a4f3dede368715fe288e4b079d1b2a12e0fe1f5dc1f6602ab0d06bfa4851ccdf&#34;</span>
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ docker inspect  a4f3dede3687 | jq -r <span style="color:#e6db74">&#39;.[0].Config.Labels&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.container.name&#34;</span>: <span style="color:#e6db74">&#34;POD&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.docker.type&#34;</span>: <span style="color:#e6db74">&#34;podsandbox&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.pod.name&#34;</span>: <span style="color:#e6db74">&#34;nginxx-7664b4dd7-db8zt&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.pod.namespace&#34;</span>: <span style="color:#e6db74">&#34;default&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;io.kubernetes.pod.uid&#34;</span>: <span style="color:#e6db74">&#34;9f4c1e6b-af2e-47c3-b6ee-0b5f2d54364e&#34;</span>,
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>对于 pause 容器与工作容器，他们的 &ldquo;io.kubernetes.pod.*&rdquo; 属性均相同，然而对于 pause 容器，其 <code>io.kubernetes.docker.type</code> 为<code>podsandbox</code> 而工作容器为 <code>container</code>。 为进步验证我们猜想。我们找到 ListContainer 的实现。</p>
 <h3 id="listcontainer-的实现">ListContainer 的实现</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">//pkg/kubelet/dockershim/docker_container.go
-</span><span style="color:#75715e">// ListContainers lists all containers matching the filter.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">dockerService</span>) <span style="color:#a6e22e">ListContainers</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListContainersRequest</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListContainersResponse</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">filter</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">GetFilter</span>()
-	<span style="color:#a6e22e">opts</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dockertypes</span>.<span style="color:#a6e22e">ContainerListOptions</span>{<span style="color:#a6e22e">All</span>: <span style="color:#66d9ef">true</span>}
-
-	<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">Filters</span> = <span style="color:#a6e22e">dockerfilters</span>.<span style="color:#a6e22e">NewArgs</span>()
-	<span style="color:#a6e22e">f</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newDockerFilter</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">Filters</span>)
-	<span style="color:#75715e">// Add filter to get *only* (non-sandbox) containers.
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">AddLabel</span>(<span style="color:#a6e22e">containerTypeLabelKey</span>, <span style="color:#a6e22e">containerTypeLabelContainer</span>)
-
-    <span style="color:#f92672">...</span>
-   
-	<span style="color:#a6e22e">containers</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">ListContainers</span>(<span style="color:#a6e22e">opts</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#75715e">// Convert docker to runtime api containers.
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">result</span> <span style="color:#f92672">:=</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">Container</span>{}
-    
-    <span style="color:#f92672">...</span>
-
-	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListContainersResponse</span>{<span style="color:#a6e22e">Containers</span>: <span style="color:#a6e22e">result</span>}, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>ListContainers 实现比较直接，方法中开始位置设置了一个默认过滤器，用于过滤工作容器。然后调用 docker client 调用 docker api 获取容器。 最后将 docker 对象转换为 k8s 的 runtimeapi.Container 对象。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">	<span style="color:#a6e22e">containerTypeLabelKey</span>       = <span style="color:#e6db74">&#34;io.kubernetes.docker.type&#34;</span>
-	<span style="color:#a6e22e">containerTypeLabelContainer</span> = <span style="color:#e6db74">&#34;container&#34;</span>
-    <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">AddLabel</span>(<span style="color:#a6e22e">containerTypeLabelKey</span>, <span style="color:#a6e22e">containerTypeLabelContainer</span>)
-</code></pre></div><h3 id="listpodsandbox-的实现">ListPodSandbox 的实现</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#75715e">//pkg/kubelet/dockershim/docker_container.go
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// ListContainers lists all containers matching the filter.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">dockerService</span>) <span style="color:#a6e22e">ListContainers</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListContainersRequest</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListContainersResponse</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">filter</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">GetFilter</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">opts</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dockertypes</span>.<span style="color:#a6e22e">ContainerListOptions</span>{<span style="color:#a6e22e">All</span>: <span style="color:#66d9ef">true</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">Filters</span> = <span style="color:#a6e22e">dockerfilters</span>.<span style="color:#a6e22e">NewArgs</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">f</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newDockerFilter</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">Filters</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Add filter to get *only* (non-sandbox) containers.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">AddLabel</span>(<span style="color:#a6e22e">containerTypeLabelKey</span>, <span style="color:#a6e22e">containerTypeLabelContainer</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>   
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">containers</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">ListContainers</span>(<span style="color:#a6e22e">opts</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Convert docker to runtime api containers.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">result</span> <span style="color:#f92672">:=</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">Container</span>{}
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListContainersResponse</span>{<span style="color:#a6e22e">Containers</span>: <span style="color:#a6e22e">result</span>}, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>ListContainers 实现比较直接，方法中开始位置设置了一个默认过滤器，用于过滤工作容器。然后调用 docker client 调用 docker api 获取容器。 最后将 docker 对象转换为 k8s 的 runtimeapi.Container 对象。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span>	<span style="color:#a6e22e">containerTypeLabelKey</span>       = <span style="color:#e6db74">&#34;io.kubernetes.docker.type&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">containerTypeLabelContainer</span> = <span style="color:#e6db74">&#34;container&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">AddLabel</span>(<span style="color:#a6e22e">containerTypeLabelKey</span>, <span style="color:#a6e22e">containerTypeLabelContainer</span>)
+</span></span></code></pre></div><h3 id="listpodsandbox-的实现">ListPodSandbox 的实现</h3>
 <p>接着看 ListPodSandbox 的实现。首先，主体结构基本一致，首先添加默认过滤器，仅查询 <code>podsandbox</code> 类型的容器。然而除查询 docker api 获取 pause (PodSandbox) 容器信息外， 我们同时注意到 ListPodSandbox 会通过 CheckpointManager 获取容器信息。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// ListPodSandbox returns a list of Sandbox.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">dockerService</span>) <span style="color:#a6e22e">ListPodSandbox</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListPodSandboxRequest</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListPodSandboxResponse</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">filter</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">GetFilter</span>()
-
-    <span style="color:#f92672">...</span>
-
-	<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">AddLabel</span>(<span style="color:#a6e22e">containerTypeLabelKey</span>, <span style="color:#a6e22e">containerTypeLabelSandbox</span>)
-
-	<span style="color:#75715e">// Make sure we get the list of checkpoints first so that we don&#39;t include
-</span><span style="color:#75715e"></span>	<span style="color:#75715e">// new PodSandboxes that are being created right now.
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
-	<span style="color:#a6e22e">checkpoints</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{}
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">filter</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">checkpoints</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">checkpointManager</span>.<span style="color:#a6e22e">ListCheckpoints</span>()
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;Failed to list checkpoints: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
-		}
-	}
-
-	<span style="color:#a6e22e">containers</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">ListContainers</span>(<span style="color:#a6e22e">opts</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
-
-	<span style="color:#75715e">// Convert docker containers to runtime api sandboxes.
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">result</span> <span style="color:#f92672">:=</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">PodSandbox</span>{}
-	<span style="color:#75715e">// using map as set
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sandboxIDs</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">bool</span>)
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">containers</span> {<span style="color:#f92672">...</span>
-	}
-
-	<span style="color:#75715e">// Include sandbox that could only be found with its checkpoint if no filter is applied
-</span><span style="color:#75715e"></span>	<span style="color:#75715e">// These PodSandbox will only include PodSandboxID, Name, Namespace.
-</span><span style="color:#75715e"></span>	<span style="color:#75715e">// These PodSandbox will be in PodSandboxState_SANDBOX_NOTREADY state.
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">id</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">checkpoints</span> {
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sandboxIDs</span>[<span style="color:#a6e22e">id</span>]; <span style="color:#a6e22e">ok</span> {
-			<span style="color:#66d9ef">continue</span>
-		}
-		<span style="color:#a6e22e">checkpoint</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewPodSandboxCheckpoint</span>(<span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">CheckpointData</span>{})
-		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">checkpointManager</span>.<span style="color:#a6e22e">GetCheckpoint</span>(<span style="color:#a6e22e">id</span>, <span style="color:#a6e22e">checkpoint</span>)
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {<span style="color:#f92672">...</span>
-		}
-		<span style="color:#a6e22e">result</span> = append(<span style="color:#a6e22e">result</span>, <span style="color:#a6e22e">checkpointToRuntimeAPISandbox</span>(<span style="color:#a6e22e">id</span>, <span style="color:#a6e22e">checkpoint</span>))
-	}
-
-	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListPodSandboxResponse</span>{<span style="color:#a6e22e">Items</span>: <span style="color:#a6e22e">result</span>}, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>根据设计文档 <a href="https://github.com/freehan/community/blob/3c1ab686ad29da4f2fa900a2e31795eadd1987d4/contributors/design-proposals/cri-dockershim-checkpoint.md">CRI: Dockershim PodSandbox Checkpoint</a> 我们得知， Kubelet 仅在容器创建过程中将容器配置传递给容器运行时，因此创建 Sandbox 时 dockershim 中会将配置信息 checkpoint (/var/lib/dockershim/sandbox/) 文件中。即使 PodSandbox 容器被删除也可以从 checkpoints 中恢复出 PodSandbox 的信息。 因此，ListPodSandbox 在读取过 docker 中的容器信息后，又尝试会尝试从 checkpoint 中恢复。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#75715e">// ListPodSandbox returns a list of Sandbox.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">dockerService</span>) <span style="color:#a6e22e">ListPodSandbox</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListPodSandboxRequest</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListPodSandboxResponse</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">filter</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">GetFilter</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">AddLabel</span>(<span style="color:#a6e22e">containerTypeLabelKey</span>, <span style="color:#a6e22e">containerTypeLabelSandbox</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Make sure we get the list of checkpoints first so that we don&#39;t include
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#75715e">// new PodSandboxes that are being created right now.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">checkpoints</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">filter</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">checkpoints</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">checkpointManager</span>.<span style="color:#a6e22e">ListCheckpoints</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;Failed to list checkpoints: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">containers</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">ListContainers</span>(<span style="color:#a6e22e">opts</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Convert docker containers to runtime api sandboxes.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">result</span> <span style="color:#f92672">:=</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">PodSandbox</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// using map as set
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sandboxIDs</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">bool</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">containers</span> {<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Include sandbox that could only be found with its checkpoint if no filter is applied
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#75715e">// These PodSandbox will only include PodSandboxID, Name, Namespace.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#75715e">// These PodSandbox will be in PodSandboxState_SANDBOX_NOTREADY state.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">id</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">checkpoints</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sandboxIDs</span>[<span style="color:#a6e22e">id</span>]; <span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">checkpoint</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewPodSandboxCheckpoint</span>(<span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">CheckpointData</span>{})
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">checkpointManager</span>.<span style="color:#a6e22e">GetCheckpoint</span>(<span style="color:#a6e22e">id</span>, <span style="color:#a6e22e">checkpoint</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">result</span> = append(<span style="color:#a6e22e">result</span>, <span style="color:#a6e22e">checkpointToRuntimeAPISandbox</span>(<span style="color:#a6e22e">id</span>, <span style="color:#a6e22e">checkpoint</span>))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">runtimeapi</span>.<span style="color:#a6e22e">ListPodSandboxResponse</span>{<span style="color:#a6e22e">Items</span>: <span style="color:#a6e22e">result</span>}, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>根据设计文档 <a href="https://github.com/freehan/community/blob/3c1ab686ad29da4f2fa900a2e31795eadd1987d4/contributors/design-proposals/cri-dockershim-checkpoint.md">CRI: Dockershim PodSandbox Checkpoint</a> 我们得知， Kubelet 仅在容器创建过程中将容器配置传递给容器运行时，因此创建 Sandbox 时 dockershim 中会将配置信息 checkpoint (/var/lib/dockershim/sandbox/) 文件中。即使 PodSandbox 容器被删除也可以从 checkpoints 中恢复出 PodSandbox 的信息。 因此，ListPodSandbox 在读取过 docker 中的容器信息后，又尝试会尝试从 checkpoint 中恢复。</p>
 <h2 id="第二次尝试">第二次尝试：</h2>
 <p>经过上面的分析，我们发现不仅仅需要删除 pause 容器，还需要同时删除 checkpoint 才可能重现上面问题。 Deploy 过程同上, 我们从第二步开始：</p>
 <ol>
 <li>首先获取 POD 的名字，然后根据 POD 找到所需的容器, 并查询 sandbox pod的id：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker ps -a -f <span style="color:#e6db74">&#34;label=io.kubernetes.pod.name=nginx-one-77fbc7959f-xcmvw&#34;</span>
-CONTAINER ID        IMAGE     COMMAND                  CREATED             STATUS              PORTS               NAMES
-b9f3f73c3e68        nginx     <span style="color:#e6db74">&#34;nginx -g &#39;daemon of…&#34;</span>   <span style="color:#ae81ff">3</span> hours ago         Up <span style="color:#ae81ff">3</span> hours  k8s_nginx_nginx-one-77fbc7959f-xcmvw_accounting_c53bd2fd-cd78-43d3-b84a-441993614902_0
-bd7408eadf1c        pause:3.2 <span style="color:#e6db74">&#34;/pause&#34;</span>                 <span style="color:#ae81ff">3</span> hours ago         Up <span style="color:#ae81ff">3</span> hours  k8s_POD_nginx-one-77fbc7959f-xcmvw_accounting_c53bd2fd-cd78-43d3-b84a-441993614902_0
-</code></pre></div><p>PodSanbox 容器中并未保存 sandbox的ID，需要将工作容器的 id 传入 docker inspect 命令用于获取 sandbox id：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker inspect  b9f3f73c3e68 | jq -r <span style="color:#e6db74">&#39;.[0].Config.Labels[&#34;io.kubernetes.sandbox.id&#34;]&#39;</span>
-
-bd7408eadf1c2b859106d730fc29c3aa45f0721b17c77d0fa0d302ef1abac006
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ docker ps -a -f <span style="color:#e6db74">&#34;label=io.kubernetes.pod.name=nginx-one-77fbc7959f-xcmvw&#34;</span>
+</span></span><span style="display:flex;"><span>CONTAINER ID        IMAGE     COMMAND                  CREATED             STATUS              PORTS               NAMES
+</span></span><span style="display:flex;"><span>b9f3f73c3e68        nginx     <span style="color:#e6db74">&#34;nginx -g &#39;daemon of…&#34;</span>   <span style="color:#ae81ff">3</span> hours ago         Up <span style="color:#ae81ff">3</span> hours  k8s_nginx_nginx-one-77fbc7959f-xcmvw_accounting_c53bd2fd-cd78-43d3-b84a-441993614902_0
+</span></span><span style="display:flex;"><span>bd7408eadf1c        pause:3.2 <span style="color:#e6db74">&#34;/pause&#34;</span>                 <span style="color:#ae81ff">3</span> hours ago         Up <span style="color:#ae81ff">3</span> hours  k8s_POD_nginx-one-77fbc7959f-xcmvw_accounting_c53bd2fd-cd78-43d3-b84a-441993614902_0
+</span></span></code></pre></div><p>PodSanbox 容器中并未保存 sandbox的ID，需要将工作容器的 id 传入 docker inspect 命令用于获取 sandbox id：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ docker inspect  b9f3f73c3e68 | jq -r <span style="color:#e6db74">&#39;.[0].Config.Labels[&#34;io.kubernetes.sandbox.id&#34;]&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>bd7408eadf1c2b859106d730fc29c3aa45f0721b17c77d0fa0d302ef1abac006
+</span></span></code></pre></div><ol start="2">
 <li>得到以上信息后，我们就可以将它删除了：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker rm -f bd7408eadf1c
-sudo rm /var/lib/dockershim/sandbox/bd7408eadf1c2b859106d730fc29c3aa45f0721b17c77d0fa0d302ef1abac006
-</code></pre></div><p>再次启动 Kubelet，我们得到了相同的启动错误：</p>
-<pre><code class="language-log" data-lang="log">F1208 09:11:53.053603   19320 kubelet.go:1386] Failed to start ContainerManager failed to build map of initial containers from runtime: no PodsandBox found with Id 'bd7408eadf1c2b859106d730fc29c3aa45f0721b17c77d0fa0d302ef1abac006'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker rm -f bd7408eadf1c
+</span></span><span style="display:flex;"><span>sudo rm /var/lib/dockershim/sandbox/bd7408eadf1c2b859106d730fc29c3aa45f0721b17c77d0fa0d302ef1abac006
+</span></span></code></pre></div><p>再次启动 Kubelet，我们得到了相同的启动错误：</p>
+<pre tabindex="0"><code class="language-log" data-lang="log">F1208 09:11:53.053603   19320 kubelet.go:1386] Failed to start ContainerManager failed to build map of initial containers from runtime: no PodsandBox found with Id &#39;bd7408eadf1c2b859106d730fc29c3aa45f0721b17c77d0fa0d302ef1abac006&#39;
 </code></pre><h2 id="未完待续">未完待续。。。</h2>
 <p>虽然我们已经通过手动制造脏数据的方式成功的重现了同样的错误，但是尚未找到重现真正问题的方法。这里有个疑问: 工作容器是先于 pause 容器删除的， 那么在什么情况下会导致工作容器未被删除，而 pause 容器和 checkpoints 均被删除的。 由于未能得到问题发生时的log， 因此未能进一步分析。</p>
 
@@ -321,7 +330,7 @@ sudo rm /var/lib/dockershim/sandbox/bd7408eadf1c2b859106d730fc29c3aa45f0721b17c7
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.811954351 &#43;0000 UTC m=&#43;0.215910819">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.130958298 &#43;0800 CST m=&#43;0.063104717">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

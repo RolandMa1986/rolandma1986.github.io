@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
     <head>
-	<meta name="generator" content="Hugo 0.74.3" />
+	<meta name="generator" content="Hugo 0.105.0">
 		
 		
 		<meta charset="UTF-8">
@@ -14,13 +14,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="/index.xml" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -38,6 +40,10 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
@@ -45,6 +51,19 @@
 
 
 	<div class="catalogue">
+		
+			<a href="/post/touchscreen/" class="catalogue-item">
+    <div>
+        <time datetime="2022-11-12 14:15:42 &#43;0000 UTC" class="catalogue-time">November 12, 2022</time>
+        <h2 class="catalogue-title">eGalax Touch USB 触摸屏驱动触摸事件优化</h2>
+        <div class="catalogue-line"></div>
+
+        <p>
+            <p>最近在做的工控触摸屏项目，在硬件上使用到了 eGalax Touch 电阻触摸屏。该触屏的驱动支持常见 Linux 发行版，包括 Ubuntu Debian SuSE 等等。在软件层采了用基于 Electron 的客户端开发模式，运行在 Ubuntu 系统上。</p>
+        </p>
+    </div>
+</a>
+
 		
 			<a href="/post/neuvector/" class="catalogue-item">
     <div>
@@ -80,8 +99,8 @@
 
         <p>
             在 Kubernetes Webhook 开发过程中，调试是复杂场景下不可或缺的步骤。 但 Kubebuilder 文档中只给出了的远程部署运行步骤以及禁用 webhook 的方法，并没有给出本地调试的具体方法，只是了了数字带过：
- If you want to run the webhooks locally, you’ll have to generate certificates for serving the webhooks, and place them in the right directory (/tmp/k8s-webhook-server/serving-certs/tls.{crt,key}, by default).
-  If you’re not running a local API server, you’ll also need to figure out how to proxy traffic from the remote cluster to your local webhook server.
+If you want to run the webhooks locally, you’ll have to generate certificates for serving the webhooks, and place them in the right directory (/tmp/k8s-webhook-server/serving-certs/tls.{crt,key}, by default).
+If you’re not running a local API server, you’ll also need to figure out how to proxy traffic from the remote cluster to your local webhook server.
         </p>
     </div>
 </a>
@@ -95,23 +114,6 @@
 
         <p>
             <p>KubeSphere 项目网关与应用路由提供了一种聚合服务的方式，将集群的内部服务通过一个外部可访问的 IP 地址以 HTTP 或 HTTPs 暴露给集群外部。应用路由定义了这些服务的访问规则，用户可以定义基于 host 主机名称和 URL 匹配的规则。同时还可以配置 HTTPs offloading 等选项。项目网关则是应用路由的具体实现，它承载了流量的入口并根据应用路由规则将匹配到的请求转发至集群内的服务。</p>
-        </p>
-    </div>
-</a>
-
-		
-			<a href="/post/helm-tips/" class="catalogue-item">
-    <div>
-        <time datetime="2021-05-24 06:52:16 &#43;0000 UTC" class="catalogue-time">May 24, 2021</time>
-        <h2 class="catalogue-title">Helm Tips</h2>
-        <div class="catalogue-line"></div>
-
-        <p>
-            Helm 是最常用的 Kubernetes 包管理器之一。但实际应使用时却会面对各种复杂的问题，以下内容是对常见应用场景的简要总结：
-将 kubectl 部署的资源转为 Helm 资源 如果您的项目最初不是使用 Helm 进行资源管理且已经部署在线上运行，那么你可能需要将已有资源转换 Helm 资源。 否则直接运行 helm install 这时你将看见如下错误信息：
-Error: rendered manifests contain a resource that already exists. Unable to continue with install: 
-解决这个问题的方法很简单，只需要将对应的资源打上 Helm 的 Label 和 Annotation 即可:
-KIND=deployment NAME=my-app-staging RELEASE=staging NAMESPACE=default kubectl annotate $KIND $NAME meta.helm.sh/release-name=$RELEASE kubectl annotate $KIND $NAME meta.
         </p>
     </div>
 </a>
@@ -133,7 +135,7 @@ KIND=deployment NAME=my-app-staging RELEASE=staging NAMESPACE=default kubectl an
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.807292012 &#43;0000 UTC m=&#43;0.211248563">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.130532687 &#43;0800 CST m=&#43;0.062679110">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

@@ -12,13 +12,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -36,10 +38,17 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
-	<div class="post">
+	
+
+
+        <div class="post">
 		<div class="post-info">
     <span>Written by</span>
         
@@ -56,13 +65,13 @@
 <h2 id="ubuntu-下载步骤">Ubuntu 下载步骤</h2>
 <h3 id="step-1-启用源码仓库">Step 1 启用源码仓库</h3>
 <p>Ubuntu 的源码仓库默认为禁用状态。因此在下载安装包之前，需要先启用源码仓库。首先编辑 APT 源文件 /etc/apt/sources.list：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo vi /etc/apt/sources.list
-</code></pre></div><p>以 Ubuntu 18.04 为例，取消所有以 deb-src 为开头的源路径。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">deb-src http://cn.archive.ubuntu.com/ubuntu bionic main restricted
-deb-src http://cn.archive.ubuntu.com/ubuntu bionic-updates main restricted
-deb-src http://cn.archive.ubuntu.com/ubuntu bionic universe
-...
-</code></pre></div><p>其中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo vi /etc/apt/sources.list
+</span></span></code></pre></div><p>以 Ubuntu 18.04 为例，取消所有以 deb-src 为开头的源路径。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>deb-src http://cn.archive.ubuntu.com/ubuntu bionic main restricted
+</span></span><span style="display:flex;"><span>deb-src http://cn.archive.ubuntu.com/ubuntu bionic-updates main restricted
+</span></span><span style="display:flex;"><span>deb-src http://cn.archive.ubuntu.com/ubuntu bionic universe
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>其中：</p>
 <ol>
 <li><code>deb-src</code> 表明其为deb的源码仓库</li>
 <li><code>http://cn.archive.ubuntu.com/ubuntu</code> 是获取 index 和 deb 文件的URL</li>
@@ -70,14 +79,14 @@ deb-src http://cn.archive.ubuntu.com/ubuntu bionic universe
 <li><code>main, universe</code> 不同组件的仓库</li>
 </ol>
 <p>我们也可以添加第三方的源已经代码源，以 docker-ce 为例在源中增加以下两行即可:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">deb <span style="color:#f92672">[</span>arch<span style="color:#f92672">=</span>amd64<span style="color:#f92672">]</span> https://download.docker.com/linux/ubuntu bionic stable
-deb-src <span style="color:#f92672">[</span>arch<span style="color:#f92672">=</span>amd64<span style="color:#f92672">]</span> https://download.docker.com/linux/ubuntu bionic stable
-</code></pre></div><h3 id="step-2-更新-index">Step 2 更新 index</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>deb <span style="color:#f92672">[</span>arch<span style="color:#f92672">=</span>amd64<span style="color:#f92672">]</span> https://download.docker.com/linux/ubuntu bionic stable
+</span></span><span style="display:flex;"><span>deb-src <span style="color:#f92672">[</span>arch<span style="color:#f92672">=</span>amd64<span style="color:#f92672">]</span> https://download.docker.com/linux/ubuntu bionic stable
+</span></span></code></pre></div><h3 id="step-2-更新-index">Step 2 更新 index</h3>
 <p>修改过源文件之后需要执行 <code>apt update</code> 或者 <code>apt-get update</code> 命令更新包索引文件。</p>
 <h3 id="step-3-安装-dpkg-dev-包">Step 3 安装 dpkg-dev 包</h3>
 <p>下载源码依赖于 dpkg-dev 进行解包。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-get install dpkg-dev
-</code></pre></div><p>如果未安装 dpkg-dev 执行下载时会遇到以下错误：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-get install dpkg-dev
+</span></span></code></pre></div><p>如果未安装 dpkg-dev 执行下载时会遇到以下错误：</p>
 <blockquote>
 <p>sh: 1: dpkg-source: not found
 W: Download is performed unsandboxed as root as file &lsquo;systemd_237-3ubuntu10.43.dsc&rsquo; couldn&rsquo;t be accessed by user &lsquo;_apt&rsquo;. - pkgAcquire::Run (13: Permission denied)
@@ -86,18 +95,18 @@ N: Check if the &lsquo;dpkg-dev&rsquo; package is installed.</p>
 </blockquote>
 <h3 id="step-4-下载-ubuntu-包源码">Step 4 下载 Ubuntu 包源码</h3>
 <p>接下来我们就可以使用 apt 命令来下载源码了。我们以 systemd 为例演示下载步骤:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># sudo apt-get source {pkg name}</span> 
-$ sudo apt-get source systemd
-</code></pre></div><p>至此 systemd 已经被下载并解压到当前工作目录。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># sudo apt-get source {pkg name} </span>
+</span></span><span style="display:flex;"><span>$ sudo apt-get source systemd
+</span></span></code></pre></div><p>至此 systemd 已经被下载并解压到当前工作目录。</p>
 <h2 id="理解源码结构">理解源码结构</h2>
 <p>首先使用 ls 命令查看当前目录：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ls -l
-total <span style="color:#ae81ff">7000</span>
-drwxr-xr-x <span style="color:#ae81ff">28</span> root root    <span style="color:#ae81ff">4096</span> Dec <span style="color:#ae81ff">15</span> 01:44 systemd-237
--rw-r--r--  <span style="color:#ae81ff">1</span> root root  <span style="color:#ae81ff">277780</span> Oct <span style="color:#ae81ff">26</span> 15:13 systemd_237-3ubuntu10.43.debian.tar.xz
--rw-r--r--  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">5187</span> Oct <span style="color:#ae81ff">26</span> 15:13 systemd_237-3ubuntu10.43.dsc
--rw-r--r--  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">6871350</span> Jan <span style="color:#ae81ff">31</span>  <span style="color:#ae81ff">2018</span> systemd_237.orig.tar.gz
-</code></pre></div><p>在这个当前文件夹下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ls -l
+</span></span><span style="display:flex;"><span>total <span style="color:#ae81ff">7000</span>
+</span></span><span style="display:flex;"><span>drwxr-xr-x <span style="color:#ae81ff">28</span> root root    <span style="color:#ae81ff">4096</span> Dec <span style="color:#ae81ff">15</span> 01:44 systemd-237
+</span></span><span style="display:flex;"><span>-rw-r--r--  <span style="color:#ae81ff">1</span> root root  <span style="color:#ae81ff">277780</span> Oct <span style="color:#ae81ff">26</span> 15:13 systemd_237-3ubuntu10.43.debian.tar.xz
+</span></span><span style="display:flex;"><span>-rw-r--r--  <span style="color:#ae81ff">1</span> root root    <span style="color:#ae81ff">5187</span> Oct <span style="color:#ae81ff">26</span> 15:13 systemd_237-3ubuntu10.43.dsc
+</span></span><span style="display:flex;"><span>-rw-r--r--  <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">6871350</span> Jan <span style="color:#ae81ff">31</span>  <span style="color:#ae81ff">2018</span> systemd_237.orig.tar.gz
+</span></span></code></pre></div><p>在这个当前文件夹下：</p>
 <ul>
 <li><code>systemd_237.orig.tar.gz</code> 以 .orig.tar.gz 结尾的文件为上游源码的压缩包。</li>
 <li><code>systemd_237-3ubuntu10.43.dsc</code> 为当前包的描述文件，包括依赖项，签名等信息。</li>
@@ -105,14 +114,14 @@ drwxr-xr-x <span style="color:#ae81ff">28</span> root root    <span style="color
 <li><code>systemd-237</code> 解压后的源代码目录</li>
 </ul>
 <p>下载源码时，我们可以使用 &ndash;download-only 选项，来跳过解压过程。下载完成后，可以使用 dpkg-source 命令进行解压.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo apt-get --download-only source <span style="color:#f92672">{</span>pkg<span style="color:#f92672">}</span>
-$ dpkg-source -x /path/to/pkg.dsc
-</code></pre></div><h2 id="编译">编译</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo apt-get --download-only source <span style="color:#f92672">{</span>pkg<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>$ dpkg-source -x /path/to/pkg.dsc
+</span></span></code></pre></div><h2 id="编译">编译</h2>
 <p>使用 apt-get build-dep 命令可以为我们自动安装编译 systemd 所需要的工具包：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-get -y build-dep systemd
-</code></pre></div><p>最后，我们可以自行打包：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ debuild
-</code></pre></div><p>至此，我们已经得到了源码，在此基础之上编译了自己deb包。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-get -y build-dep systemd
+</span></span></code></pre></div><p>最后，我们可以自行打包：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ debuild
+</span></span></code></pre></div><p>至此，我们已经得到了源码，在此基础之上编译了自己deb包。</p>
 <p>参考：
 <a href="https://www.cyberciti.biz/faq/how-to-get-source-code-of-package-using-the-apt-command-on-debian-or-ubuntu/">https://www.cyberciti.biz/faq/how-to-get-source-code-of-package-using-the-apt-command-on-debian-or-ubuntu/</a></p>
 
@@ -131,7 +140,7 @@ $ dpkg-source -x /path/to/pkg.dsc
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.749448501 &#43;0000 UTC m=&#43;0.153405024">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.105278651 &#43;0800 CST m=&#43;0.037425071">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

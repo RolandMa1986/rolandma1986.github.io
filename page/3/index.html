@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
     <head>
-	<meta name="generator" content="Hugo 0.74.3" />
+	<meta name="generator" content="Hugo 0.105.0">
 		
 		
 		<meta charset="UTF-8">
@@ -14,13 +14,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="/index.xml" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -38,6 +40,10 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
@@ -45,6 +51,19 @@
 
 
 	<div class="catalogue">
+		
+			<a href="/post/how-to-get-source-code-of-package/" class="catalogue-item">
+    <div>
+        <time datetime="2020-12-14 15:03:27 &#43;0000 UTC" class="catalogue-time">December 14, 2020</time>
+        <h2 class="catalogue-title">使用 apt 命令获取 Ubuntu 安装包源码</h2>
+        <div class="catalogue-line"></div>
+
+        <p>
+            <p>由于最近需要研究一个关于 Ubuntu 上 systemd 的问题，因此需要下载 systemd 的源代码。 一般源码下载可以在官网或者Github中下载，如 systemd。但是由于 linux 各个分发版本可能会给它们打上自己的补丁，因此我们需要从 Ubuntu 下载其源码包。在 Debian 或 Ubuntu 的系统中源码是文件版的软件发行包，因此我们可以使用 apt-get 或者 apt 命令下载其源码 (DEB 文件包)。</p>
+        </p>
+    </div>
+</a>
+
 		
 			<a href="/post/kubernetes-no-podsandbox-found/" class="catalogue-item">
     <div>
@@ -67,7 +86,7 @@
 
         <p>
             X509 客户证书 一般 Kubernetes 集群都会启用基于客户证书的用户认证模式。 API Server 通过 --client-ca-file=SOMEFILE 选项配置 CA 证书用于客户证书认证。如果提供的证书被验证通过，则 subject 中的公共名称（Common Name）就被作为请求的用户名。 通常可以使用两种方式签发：
- 通过 CertificateSigningRequest 资源类型允许客户申请签名 X.509 证书 使用外部证书服务颁发证书，如 openssl  通过 CSR API 签发证书步骤：  生成用户私钥：  openssl genrsa -out user2.key 2048 使用私钥生成证书签名请求 CSR:  openssl req -new -key user2.key -out user2.csr -subj &#34;/CN=user2/O=group1/O=group2&#34;  如果遇到错误信息 Can't load /home/ubuntu/.
+通过 CertificateSigningRequest 资源类型允许客户申请签名 X.509 证书 使用外部证书服务颁发证书，如 openssl 通过 CSR API 签发证书步骤： 生成用户私钥： openssl genrsa -out user2.key 2048 使用私钥生成证书签名请求 CSR: openssl req -new -key user2.key -out user2.csr -subj &#34;/CN=user2/O=group1/O=group2&#34; 如果遇到错误信息 Can't load /home/ubuntu/.rnd into RNG 需先执行：
         </p>
     </div>
 </a>
@@ -82,7 +101,7 @@
         <p>
             Kubernetes 有多种部署方式，学习环境可以选用 Minikube 或 Kind 等。但在 CKA 认证考试中会考察基于 Kubeadm 的部署方式， 操作系统为 Ubuntu。你可以使用云主机或者VirlualBox虚拟机环境安装 Ubuntu。这里我们推荐在线教学环境 KataKoda。 Kadakda 的课程中提供了交互式教学环境，我们既可以参考其实验步骤，也可独立使用其在线环境。
 什么是 Kubeadm? Kubeadm 是 Kubernetes 集群快速安装部署工具，它解决了 Kubernetes 核心组件安装，TLS 加密配置，证书管理等问题，提供了开箱即用的安全特性。
-Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm join 将工作节点加入集群或者添加其他控制面节点 kubeadm upgrade 用户升级 Kubernetes 集群 kubeadm reset 重置当前主机，恢复 kubeadm init 或 kubeadm join 的配置。  Kubernetes 组件 Kubernetes 集群由控制面与集群节点两部分组成， 节点上运行应用的工作负载 Pod，控制面负责集群中的工作节点与 Pod 的管理。
+Kubeadm 常用命令 kubeadm init 用于初始化 Kubernetes 控制面 kubeadm join 将工作节点加入集群或者添加其他控制面节点 kubeadm upgrade 用户升级 Kubernetes 集群 kubeadm reset 重置当前主机，恢复 kubeadm init 或 kubeadm join 的配置。 Kubernetes 组件 Kubernetes 集群由控制面与集群节点两部分组成， 节点上运行应用的工作负载 Pod，控制面负责集群中的工作节点与 Pod 的管理。
         </p>
     </div>
 </a>
@@ -98,19 +117,6 @@ Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm 
             <blockquote>
 <p>Issue 管理是软件工程中重要的一个环节。项目管理者可以通过 issue 对项目做持续的追踪，复审，把握整体的质量和进度。同时及时发现风险和问题。在开源软管理过程中，issue 的追踪变得更为棘手，来自全世界开发者的 issue 会源源不断的进入 issue 管理系统中。因此更需要一个高效的管理流程及工具。</p>
 </blockquote>
-        </p>
-    </div>
-</a>
-
-		
-			<a href="/post/spring-cloud-on-kubeshpere/" class="catalogue-item">
-    <div>
-        <time datetime="2020-10-22 02:06:46 &#43;0000 UTC" class="catalogue-time">October 22, 2020</time>
-        <h2 class="catalogue-title">基于 KubeSphere 的 Spring Could 微服务 CI/CD 实践</h2>
-        <div class="catalogue-line"></div>
-
-        <p>
-            <p>本文以 Pig 为例介绍如何在 KubeSphere 上发布一个基于 Spring Cloud 微服务的 CI/CD 项目。</p>
         </p>
     </div>
 </a>
@@ -134,7 +140,7 @@ Kubeadm 常用命令  kubeadm init 用于初始化 Kubernetes 控制面 kubeadm 
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.816686776 &#43;0000 UTC m=&#43;0.220643608">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.133667866 &#43;0800 CST m=&#43;0.065814286">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

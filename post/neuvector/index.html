@@ -12,13 +12,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -36,10 +38,17 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
-	<div class="post">
+	
+
+
+        <div class="post">
 		<div class="post-info">
     <span>Written by</span>
         
@@ -63,6 +72,7 @@
 <th>链接</th>
 <th>Star</th>
 <th>类型</th>
+<th>开源时间</th>
 </tr>
 </thead>
 <tbody>
@@ -72,6 +82,7 @@
 <td><a href="https://github.com/quay/clair">https://github.com/quay/clair</a></td>
 <td>8.4k</td>
 <td>镜像扫描</td>
+<td>2015-11-13</td>
 </tr>
 <tr>
 <td>trivy</td>
@@ -79,6 +90,7 @@
 <td><a href="https://github.com/aquasecurity/trivy">https://github.com/aquasecurity/trivy</a></td>
 <td>10.1k</td>
 <td>镜像扫描</td>
+<td>2019-04-11</td>
 </tr>
 <tr>
 <td>kube-hunter</td>
@@ -86,6 +98,7 @@
 <td><a href="https://github.com/aquasecurity/kube-hunter/">https://github.com/aquasecurity/kube-hunter/</a></td>
 <td>3.4k</td>
 <td>漏洞扫描</td>
+<td>2018-07-18</td>
 </tr>
 <tr>
 <td>kube-bench</td>
@@ -93,6 +106,7 @@
 <td><a href="https://github.com/aquasecurity/kube-bench">https://github.com/aquasecurity/kube-bench</a></td>
 <td>4.5k</td>
 <td>CIS 安全基线</td>
+<td>2017-06-19</td>
 </tr>
 <tr>
 <td>starboard</td>
@@ -100,6 +114,7 @@
 <td><a href="https://github.com/aquasecurity/starboard">https://github.com/aquasecurity/starboard</a></td>
 <td>968</td>
 <td>Dashboard</td>
+<td>2020-03-17</td>
 </tr>
 <tr>
 <td>tracee</td>
@@ -107,6 +122,7 @@
 <td><a href="https://github.com/aquasecurity/tracee">https://github.com/aquasecurity/tracee</a></td>
 <td>1.5k</td>
 <td>基于 eBPF 的系统事件追踪</td>
+<td>2019-09-18</td>
 </tr>
 <tr>
 <td>anchore-engine</td>
@@ -114,6 +130,7 @@
 <td><a href="https://github.com/anchore/anchore-engine">https://github.com/anchore/anchore-engine</a></td>
 <td>1.4k</td>
 <td>漏洞扫描</td>
+<td>2017-09-06</td>
 </tr>
 <tr>
 <td>kyverno</td>
@@ -121,6 +138,7 @@
 <td><a href="https://github.com/kyverno/kyverno">https://github.com/kyverno/kyverno</a></td>
 <td>1.8k</td>
 <td>Kubernetes 策略与审计</td>
+<td>2019-02-04</td>
 </tr>
 <tr>
 <td>GateKeeper</td>
@@ -128,6 +146,7 @@
 <td><a href="https://github.com/open-policy-agent/gatekeeper">https://github.com/open-policy-agent/gatekeeper</a></td>
 <td>1.3k</td>
 <td>Kubernetes 策略与审计</td>
+<td>2018-10-26</td>
 </tr>
 <tr>
 <td>falco</td>
@@ -135,6 +154,7 @@
 <td><a href="https://github.com/falcosecurity/falco">https://github.com/falcosecurity/falco</a></td>
 <td>4.4k</td>
 <td>基于内核模块的系统事件追踪、警告</td>
+<td>2016-01-19</td>
 </tr>
 <tr>
 <td>terrascan</td>
@@ -142,13 +162,15 @@
 <td><a href="https://github.com/accurics/terrascan">https://github.com/accurics/terrascan</a></td>
 <td>2.7k</td>
 <td>通用的 IaS 配置扫描</td>
+<td>2017-09-11</td>
 </tr>
 <tr>
 <td>Kubei</td>
 <td>portshift</td>
-<td><a href="https://github.com/Portshift/kubei">https://github.com/Portshift/kubei</a></td>
+<td><a href="https://github.com/cisco-open/kubei">https://github.com/cisco-open/kubei</a></td>
 <td>489</td>
 <td>镜像扫描(带面板)</td>
+<td>2020-03-22</td>
 </tr>
 <tr>
 <td>Polaris</td>
@@ -156,6 +178,7 @@
 <td><a href="https://github.com/FairwindsOps/polaris">https://github.com/FairwindsOps/polaris</a></td>
 <td>2.4k</td>
 <td>配置扫描与策略</td>
+<td>2018-11-15</td>
 </tr>
 <tr>
 <td>kubesec</td>
@@ -163,6 +186,15 @@
 <td><a href="https://github.com/controlplaneio/kubesec">https://github.com/controlplaneio/kubesec</a></td>
 <td>667</td>
 <td>Kubernetes 配置扫描</td>
+<td>2017-10-10</td>
+</tr>
+<tr>
+<td>KubeEye</td>
+<td>KubeSphere</td>
+<td><a href="https://github.com/kubesphere/kubeeye">https://github.com/kubesphere/kubeeye</a></td>
+<td>424</td>
+<td>基于策略的 Kubernetes 集群配置扫描</td>
+<td>2020-11-07</td>
 </tr>
 <tr>
 <td>kube-linter</td>
@@ -170,6 +202,7 @@
 <td><a href="https://github.com/stackrox/kube-linter">https://github.com/stackrox/kube-linter</a></td>
 <td>1.8k</td>
 <td>Kubernetes 配置扫描</td>
+<td>2020-08-13</td>
 </tr>
 </tbody>
 </table>
@@ -274,17 +307,81 @@
 <p>从功能角度分析，Weave Scope 更加侧重于网络性能分析和调试，并支持插件，可定制化UI功能。Hubble 则更偏向于微服务治理，可显示微服务的依赖关系，对应用层协议有更好的支持。通过 Hubble 也可观测到哪些服务发起了外网访问或域名解析以及被网络策略拦截的网络连接等。</p>
 <p>NeuVector 的 Network Activity 功能着重于网络安全性。帮助网络管理员识别异常流量。管理网络安全策略，执行隔离命令等。虽然他们的视图功能相似、原理相通，但由于其功能重点不一样，横向对比的意义有限。</p>
 <h3 id="内核事件审计">内核事件审计</h3>
-<p>通过内核事件分析系统和应用的行为是运行时安全检测的重要一环。通过 Linux 内核监控的系统中的事件，事件产生速度极快，对核心模块效率要求极高。因此，目前主流方案会采用 eBPF，像 Tracee 就使用了 eBPF + Golang 的组合作为事件的收集引擎。内核模块也是另一种可选方案，Falco 目前即支持 eBPF 也支持内核模块，灵活性较高，对低版本内核有更好的支持。NeuVector 还缺少事件收集的设计文档，由于时间仓促，并未通过代码深入了解 NeuVector 事件收集的模式。仅从代码结构上看，代码相对较复杂，缺少注释，组件之前的关系仅凭命名很难确定。希望官方能尽快完善相关文档，便于进一步理解分析。</p>
+<p>通过内核事件分析系统和应用的行为是运行时安全检测的重要一环。通过 Linux 内核监控的系统中的事件，事件产生速度极快，对核心模块效率要求极高。因此，目前主流方案会采用 eBPF，像 Tracee 就使用了 eBPF + Golang 的组合作为事件的收集引擎。内核模块也是另一种可选方案，Falco 目前即支持 eBPF 也支持内核模块，灵活性较高，对低版本内核有更好的支持。NeuVector 还缺少事件收集的设计文档，由于时间仓促，并未通过代码深入了解 NeuVector 事件收集的模式。仅从代码结构上看，代码相对较复杂，缺少注释，组件之间的关系仅凭命名很难确定。希望官方能尽快完善相关文档，便于进一步理解分析。</p>
+<h2 id="安装试用">安装试用</h2>
+<p>接下来我们通过 KubeSphere 来安装试用 NeuVector。</p>
+<h3 id="进入-kubectl-终端">进入 kubectl 终端</h3>
+<p>首先登录 KubeSphere Console，进入&quot;平台管理&quot;，选择&quot;集群管理&quot;。</p>
+<p><img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151725374.png" alt=""></p>
+<p>进入&quot;ks-installer&quot;，选择&quot;应用负载&quot;，选择&quot;工作负载&quot;，项目设置为&quot;kubesphere-system&quot;，选择&quot;ks-installer&quot;。</p>
+<p><img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151726268.png" alt=""></p>
+<p>进入 ks-installer 的 Pod 终端。</p>
+<p><img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151726307.png" alt=""></p>
+<h3 id="使用-helm-安装-neuvector">使用 helm 安装 NeuVector</h3>
+<ul>
+<li>创建 namespace</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl create namespace neuvector
+</span></span></code></pre></div><ul>
+<li>创建 serviceaccount</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl create serviceaccount neuvector -n neuvector
+</span></span></code></pre></div><ul>
+<li>添加 neuvector 的 helm 仓库</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>helm repo add neuvector https://neuvector.github.io/neuvector-helm/
+</span></span></code></pre></div><ul>
+<li>安装 neuvector</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>helm install my-neuvector --namespace neuvector neuvector/core
+</span></span></code></pre></div><p><img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151736913.png" alt=""></p>
+<ul>
+<li>替换镜像</li>
+</ul>
+<blockquote>
+<p>由于 neuvector 镜像需要权限才能获取，这里将镜像替换为 preview 版本
+更多安装信息请参考：https://github.com/neuvector/neuvector-helm/tree/master/charts/core</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl set image deployment.apps/neuvector-controller-pod *<span style="color:#f92672">=</span>neuvector/controller.preview:5.0.0-preview.1 -n neuvector
+</span></span><span style="display:flex;"><span>kubectl set image deployment.apps/neuvector-manager-pod *<span style="color:#f92672">=</span>neuvector/manager.preview:5.0.0-preview.1 -n neuvector
+</span></span><span style="display:flex;"><span>kubectl set image deployment.apps/neuvector-scanner-pod *<span style="color:#f92672">=</span>neuvector/scanner.preview:latest -n neuvector
+</span></span><span style="display:flex;"><span>kubectl set image daemonset.apps/neuvector-enforcer-pod *<span style="color:#f92672">=</span>neuvector/enforcer.preview:5.0.0-preview.1 -n neuvector
+</span></span><span style="display:flex;"><span>kubectl get cronjob/neuvector-updater-pod -n neuvector -o yaml | sed <span style="color:#e6db74">&#39;s#image: registry.neuvector.com/updater:latest#image: neuvector/updater.preview:latest#&#39;</span> | kubectl replace -f -
+</span></span></code></pre></div><p><img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151736303.png" alt=""></p>
+<ul>
+<li>
+<p>查看 neuvector 服务状态</p>
+<p><img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151737985.png" alt=""></p>
+<p><img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151737548.png" alt=""></p>
+<p><img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151738324.png" alt=""></p>
+<p><img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151738099.png" alt=""></p>
+</li>
+</ul>
+<h3 id="访问-neuvector-ui">访问 neuvector UI</h3>
+<ul>
+<li>使用 kubernetes node ip 和 node port 访问 neuvector UI, e.g. http://1.2.3.4:34567</li>
+<li>默认用户密码：<code>admin/admin</code>
+<img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151743794.png" alt=""></li>
+<li>使用条款点击 &ldquo;I accept&rdquo;
+<img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151743079.png" alt=""></li>
+<li>修改默认密码
+点击用户选择&quot;my profile&quot;,点击&quot;EDIT PROFILE&quot;
+<img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151744911.png" alt=""></li>
+<li>查看 Dashboard
+<img src="https://pek3b.qingstor.com/kubesphere-community/images/202202151745349.png" alt=""></li>
+</ul>
 <h2 id="开源社区">开源社区</h2>
 <p>从 Github 仓库的信息来看，NeuVector 开源还处于起步阶段。仅仅公布了代码而已，目前还没有明确的 RoadMap，Release Plan， 社区的治理方式也尚不明确。这些问题都亟待解决。考虑到 Rancher 社区的成熟度，这一切应该只是时间问题，相信 NeuVector 会很快的步入正轨。</p>
 <h2 id="总结">总结</h2>
 <p>NeuVector 填补了安全产品的空缺。虽然各个功能模块并非业界最强，但是其全生命周期的安全治理能力是其他开源工具所不能企及的。如果未来 NeuVector 可打造成开放式平台，集成业内的优秀工具取长补短，必将发挥出更大的作，并在开源安全市场占有一席之地。</p>
+<hr>
 
 		
 	</div>
 
 	<div class="pagination">
 		<a href="/post/sysctl-kubernetes/" class="left arrow">&#8592;</a>
+		<a href="/post/touchscreen/" class="right arrow">&#8594;</a>
 
 		<a href="#" class="top">Top</a>
 	</div>
@@ -294,7 +391,7 @@
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.77993856 &#43;0000 UTC m=&#43;0.183895147">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.108603581 &#43;0800 CST m=&#43;0.040750001">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

@@ -12,13 +12,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -36,10 +38,17 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
-	<div class="post">
+	
+
+
+        <div class="post">
 		<div class="post-info">
     <span>Written by</span>
         
@@ -100,32 +109,32 @@
 <ol>
 <li>添加kubernetes源：(Katakoda中可以忽略)</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo vim /etc/apt/sources.list.d/kubernetes.list
-</code></pre></div><p>在文件中添加以下行：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">deb http://apt.kubernetes.io/ kubernetes-xenial main
-</code></pre></div><p>添加安装包的 GPG 密钥</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo vim /etc/apt/sources.list.d/kubernetes.list
+</span></span></code></pre></div><p>在文件中添加以下行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>deb http://apt.kubernetes.io/ kubernetes-xenial main
+</span></span></code></pre></div><p>添加安装包的 GPG 密钥</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+</span></span></code></pre></div><ol start="2">
 <li>检查是否添加成功 (controlplane+node01均执行该步骤)</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo cat /etc/apt/sources.list.d/kubernetes.list
-</code></pre></div><ol start="3">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo cat /etc/apt/sources.list.d/kubernetes.list
+</span></span></code></pre></div><ol start="3">
 <li>安装kubelet, kubeadm, kubectl, (controlplane+node01均执行该步骤)</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt update
-sudo apt install -y kubelet<span style="color:#f92672">=</span>1.18.1-00 kubeadm<span style="color:#f92672">=</span>1.18.1-00 kubectl<span style="color:#f92672">=</span>1.18.1-00
-sudo apt-mark hold kubelet kubeadm kubectl
-</code></pre></div><p>注意安装与升级过程中会多次使用 <code>apt-mark</code> 命令用于标记该软件包不被自动更新。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt install -y kubelet<span style="color:#f92672">=</span>1.18.1-00 kubeadm<span style="color:#f92672">=</span>1.18.1-00 kubectl<span style="color:#f92672">=</span>1.18.1-00
+</span></span><span style="display:flex;"><span>sudo apt-mark hold kubelet kubeadm kubectl
+</span></span></code></pre></div><p>注意安装与升级过程中会多次使用 <code>apt-mark</code> 命令用于标记该软件包不被自动更新。</p>
 <ol start="4">
 <li>在controlplane上执行集群初始化命令 kubeadm init, 初始化支持命令行参数模式和 yaml 配置格式等两种模式</li>
 </ol>
 <p>4.1 使用命令直接初始化:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo kubeadm init  --kubernetes-version v1.18.1 --pod-network-cidr<span style="color:#f92672">=</span>192.168.0.0/16
-</code></pre></div><p>安装过程中，请注意控制台的输出，在输出结果中有我们下一步中需要使用到的命令：</p>
-<pre><code>[init] Using Kubernetes version: v1.18.1
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo kubeadm init  --kubernetes-version v1.18.1 --pod-network-cidr<span style="color:#f92672">=</span>192.168.0.0/16
+</span></span></code></pre></div><p>安装过程中，请注意控制台的输出，在输出结果中有我们下一步中需要使用到的命令：</p>
+<pre tabindex="0"><code>[init] Using Kubernetes version: v1.18.1
 [preflight] Running pre-flight checks
-[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the
-Docker cgroup driver. The recommended driver is &quot;systemd&quot;.
+[WARNING IsDockerSystemdCheck]: detected &#34;cgroupfs&#34; as the
+Docker cgroup driver. The recommended driver is &#34;systemd&#34;.
 ....
 you can now join any number of the control-plane node
 running the following command on each as root:
@@ -138,7 +147,7 @@ Please note that the certificate-key gives access to cluster sensitive
 data, keep it secret!
 As a safeguard, uploaded-certs will be deleted in two hours; If
 necessary, you can use
-&quot;kubeadm init phase upload-certs --upload-certs&quot; to reload certs afterward.
+&#34;kubeadm init phase upload-certs --upload-certs&#34; to reload certs afterward.
 
 Then you can join any number of worker nodes by running the following
 on each as root:
@@ -146,56 +155,56 @@ on each as root:
 kubeadm join k8smaster:6443 --token b0x4dv.nbut63ktiaikcc24 \
  --discovery-token-ca-cert-hash sha256:551fe78b50dfe52410869685b7dc70b9a27e550241a6112d8d1fef2073759bb4
 </code></pre><p>4.2 使用 yaml 配置先保存以下配置到 kubeadm-config.yaml</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vim kubeadm-config.yaml
-</code></pre></div><p>复制并粘贴以下 yaml 文件到编辑器中</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">apiVersion</span>: kubeadm.k8s.io/v1beta2
-<span style="color:#66d9ef">kind</span>: ClusterConfiguration
-<span style="color:#66d9ef">kubernetesVersion</span>: <span style="color:#ae81ff">1.18.1</span> <span style="color:#75715e">#&lt;-- Use the word stable for newest version</span>
-<span style="color:#66d9ef">controlPlaneEndpoint</span>: <span style="color:#e6db74">&#34;controlplane:6443&#34;</span> <span style="color:#75715e">#&lt;-- Use the node alias not the IP</span>
-<span style="color:#66d9ef">imageRepository</span>: registry.aliyuncs.com/google_containers <span style="color:#75715e"># For China user</span>
-<span style="color:#66d9ef">networking</span>: 
-  <span style="color:#66d9ef">podSubnet</span>: <span style="color:#ae81ff">192.168.0.0</span>/<span style="color:#ae81ff">16</span> <span style="color:#75715e">#&lt;-- Match the IP range from the Calico config file</span>
-</code></pre></div><p>保存 yaml 文件后执行:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubeadm init --config<span style="color:#f92672">=</span>kubeadm-config.yaml --upload-certs | tee kubeadm-init.out
-</code></pre></div><ol start="5">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vim kubeadm-config.yaml
+</span></span></code></pre></div><p>复制并粘贴以下 yaml 文件到编辑器中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">kubeadm.k8s.io/v1beta2</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterConfiguration</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kubernetesVersion</span>: <span style="color:#ae81ff">1.18.1</span> <span style="color:#75715e">#&lt;-- Use the word stable for newest version</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">controlPlaneEndpoint</span>: <span style="color:#e6db74">&#34;controlplane:6443&#34;</span> <span style="color:#75715e">#&lt;-- Use the node alias not the IP</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">imageRepository</span>: <span style="color:#ae81ff">registry.aliyuncs.com/google_containers</span> <span style="color:#75715e"># For China user</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">networking</span>: 
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">podSubnet</span>: <span style="color:#ae81ff">192.168.0.0</span><span style="color:#ae81ff">/16</span> <span style="color:#75715e">#&lt;-- Match the IP range from the Calico config file</span>
+</span></span></code></pre></div><p>保存 yaml 文件后执行:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubeadm init --config<span style="color:#f92672">=</span>kubeadm-config.yaml --upload-certs | tee kubeadm-init.out
+</span></span></code></pre></div><ol start="5">
 <li>复制 kubeconfig 到当前用户的 .kube 目录, 用于配置 kubectl</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown <span style="color:#66d9ef">$(</span>id -u<span style="color:#66d9ef">)</span>:<span style="color:#66d9ef">$(</span>id -g<span style="color:#66d9ef">)</span> $HOME/.kube/config
-</code></pre></div><p>复制成功后既可以使用 kubectl 命令查看 Pod 状态</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl get pods --all-namespaces 
-</code></pre></div><p>这里推荐安装 bash auto-completion 插件</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 如果尚未安装 bash-completion 执行</span>
-sudo apt-get install bash-completion -y
-
-source &lt;<span style="color:#f92672">(</span>kubectl completion bash<span style="color:#f92672">)</span>
-echo <span style="color:#e6db74">&#34;source &lt;(kubectl completion bash)&#34;</span> &gt;&gt; $HOME/.bashrc
-</code></pre></div><ol start="6">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir -p $HOME/.kube
+</span></span><span style="display:flex;"><span>cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+</span></span><span style="display:flex;"><span>chown <span style="color:#66d9ef">$(</span>id -u<span style="color:#66d9ef">)</span>:<span style="color:#66d9ef">$(</span>id -g<span style="color:#66d9ef">)</span> $HOME/.kube/config
+</span></span></code></pre></div><p>复制成功后既可以使用 kubectl 命令查看 Pod 状态</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get pods --all-namespaces 
+</span></span></code></pre></div><p>这里推荐安装 bash auto-completion 插件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 如果尚未安装 bash-completion 执行</span>
+</span></span><span style="display:flex;"><span>sudo apt-get install bash-completion -y
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>source &lt;<span style="color:#f92672">(</span>kubectl completion bash<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;source &lt;(kubectl completion bash)&#34;</span> &gt;&gt; $HOME/.bashrc
+</span></span></code></pre></div><ol start="6">
 <li>安装配置 Calico 网络组件</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f  https://docs.projectcalico.org/manifests/calico.yaml
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f  https://docs.projectcalico.org/manifests/calico.yaml
+</span></span></code></pre></div><blockquote>
 <p>更多网络组件可以在官网中查找：
 <a href="https://kubernetes.io/docs/concepts/cluster-administration/addons/">https://kubernetes.io/docs/concepts/cluster-administration/addons/</a></p>
 </blockquote>
 <ol start="7">
 <li>默认情况下，由于安全原因，集群并不会将pods部署在Master节点上。但是在开发环境下，我们可能就只有一个Master节点，这时可以使用下面的命令来解除这个限制：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl taint nodes --all node-role.kubernetes.io/master-
-</code></pre></div><p>注意命令中的 &ldquo;-&rdquo; 减号，它代表删除</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl taint nodes --all node-role.kubernetes.io/master-
+</span></span></code></pre></div><p>注意命令中的 &ldquo;-&rdquo; 减号，它代表删除</p>
 <ol start="8">
 <li>复制步骤 4 中输出的 Join 命令，并在 node01 上执行将其加入集群</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubeadm join <span style="color:#f92672">[</span>controlplane<span style="color:#f92672">]</span>:6443 --token b0x4dv.nbut63ktiaikcc24 --discovery-token-ca-cert-hash sha256:551fe78b50dfe52410869685b7dc70b9a27e550241a6112d8d1fef2073759bb4
-</code></pre></div><p>注意，token 的有效期为 2 小时，如果超过两个小时，需要创建一个新的 token。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo kubeadm token list
-sudo kubeadm token create
-</code></pre></div><ol start="9">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubeadm join <span style="color:#f92672">[</span>controlplane<span style="color:#f92672">]</span>:6443 --token b0x4dv.nbut63ktiaikcc24 --discovery-token-ca-cert-hash sha256:551fe78b50dfe52410869685b7dc70b9a27e550241a6112d8d1fef2073759bb4
+</span></span></code></pre></div><p>注意，token 的有效期为 2 小时，如果超过两个小时，需要创建一个新的 token。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo kubeadm token list
+</span></span><span style="display:flex;"><span>sudo kubeadm token create
+</span></span></code></pre></div><ol start="9">
 <li>在 controlplane 节点查看 node 状态</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl get node -o wide
-</code></pre></div><h2 id="kubernetes-升级">Kubernetes 升级</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get node -o wide
+</span></span></code></pre></div><h2 id="kubernetes-升级">Kubernetes 升级</h2>
 <blockquote>
 <p>在生产环境升级集群前，需要对 ETCD 执行备份操作，ETCD 备份在后续章节中讲解。</p>
 </blockquote>
@@ -205,87 +214,87 @@ sudo kubeadm token create
 <ol>
 <li>首先更新 APT 源数据，并查找当前可用版本， 本次实验中使用 1.19.0 版本</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt update
-sudo apt-cache madison kubeadm |grep 1.19
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt-cache madison kubeadm |grep 1.19
+</span></span></code></pre></div><ol start="2">
 <li>使用APT 安装指定版本的 kubeadm，注意升级前需要解锁操作，升级后加锁，防止其被意外升级</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-mark unhold kubeadm
-sudo apt-get install -y kubeadm<span style="color:#f92672">=</span>1.19.0-00
-sudo apt-mark hold kubeadm
-</code></pre></div><ol start="3">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-mark unhold kubeadm
+</span></span><span style="display:flex;"><span>sudo apt-get install -y kubeadm<span style="color:#f92672">=</span>1.19.0-00
+</span></span><span style="display:flex;"><span>sudo apt-mark hold kubeadm
+</span></span></code></pre></div><ol start="3">
 <li>在升级控制面节点前，需要先驱逐 Pod。 DaemonSets 需要被调度到每一个 Node 上运行，如 Calico 等无法被驱逐。因此需要忽略 DaemonSets。</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl drain controlplane --ignore-daemonsets
-</code></pre></div><ol start="4">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl drain controlplane --ignore-daemonsets
+</span></span></code></pre></div><ol start="4">
 <li>使用 kubeadm upgrade plan 命令检查当前集群状态，然后进行升级。命令执行后有可能看到更新版本的 Kubernetes。此处我们仅使用 v1.19.0即可。</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo kubeadm upgrade plan
-</code></pre></div><ol start="5">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo kubeadm upgrade plan
+</span></span></code></pre></div><ol start="5">
 <li>执行升级命令,升级过程会对 kube-apiserver, kube-controller-manager, kube-scheduler, kube-proxy, CoreDNS, etcd等组件进行升级。Kubelet 需要在控制面升级结束后手动升级。</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo kubeadm upgrade apply v1.19.0
-</code></pre></div><ol start="6">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo kubeadm upgrade apply v1.19.0
+</span></span></code></pre></div><ol start="6">
 <li>检查节点状态可以看到此时 controlplane 仍然显示为 v1.18.1 版本。</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl get node
-
-NAME STATUS ROLES AGE VERSION
-controlplane Ready,SchedulingDisabled master 7h48m v1.18.1
-node01       Ready                    &lt;none&gt; 7h46m v1.18.1
-</code></pre></div><ol start="7">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get node
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NAME STATUS ROLES AGE VERSION
+</span></span><span style="display:flex;"><span>controlplane Ready,SchedulingDisabled master 7h48m v1.18.1
+</span></span><span style="display:flex;"><span>node01       Ready                    &lt;none&gt; 7h46m v1.18.1
+</span></span></code></pre></div><ol start="7">
 <li>继续升级 kubelet, kubectl</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-mark unhold kubelet kubectl
-sudo apt-get install -y kubelet<span style="color:#f92672">=</span>1.19.0-00 kubectl<span style="color:#f92672">=</span>1.19.0-00
-sudo apt-mark hold kubelet kubectl
-</code></pre></div><ol start="8">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-mark unhold kubelet kubectl
+</span></span><span style="display:flex;"><span>sudo apt-get install -y kubelet<span style="color:#f92672">=</span>1.19.0-00 kubectl<span style="color:#f92672">=</span>1.19.0-00
+</span></span><span style="display:flex;"><span>sudo apt-mark hold kubelet kubectl
+</span></span></code></pre></div><ol start="8">
 <li>升级结束后需要重启 kubelet 服务</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> sudo systemctl daemon-reload
- sudo systemctl restart kubelet
-</code></pre></div><ol start="10">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span> sudo systemctl daemon-reload
+</span></span><span style="display:flex;"><span> sudo systemctl restart kubelet
+</span></span></code></pre></div><ol start="10">
 <li>如果再次检查 controlplane 节点状态，我们会发现当前版本已经升级为 v1.19.0, 但是节点状态依然为 SchedulingDisabled。执行 kubectl uncordon 命令，是其可以被调度：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl uncordon controlplane
-</code></pre></div><p>至此控制面节点已经升级完毕</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl uncordon controlplane
+</span></span></code></pre></div><p>至此控制面节点已经升级完毕</p>
 <h3 id="工作节点升级过程">工作节点升级过程</h3>
 <p>工作节点升级与控制面节点升级过程基本一致， 我们继续执行工作节点的升级。</p>
 <ol>
 <li>在 node01 上使用 APT 安装 v1.19.0 版本的 kubeadm</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-mark unhold kubeadm
-sudo apt-get update <span style="color:#f92672">&amp;&amp;</span> sudo apt-get install -y kubeadm<span style="color:#f92672">=</span>1.19.0-00
-sudo apt-mark hold kubeadm
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-mark unhold kubeadm
+</span></span><span style="display:flex;"><span>sudo apt-get update <span style="color:#f92672">&amp;&amp;</span> sudo apt-get install -y kubeadm<span style="color:#f92672">=</span>1.19.0-00
+</span></span><span style="display:flex;"><span>sudo apt-mark hold kubeadm
+</span></span></code></pre></div><ol start="2">
 <li>驱逐Pod
 注意，当前 node01 上没有 kubeconfig 需要再 contolpanle 上执行， 当然也可以将 contolpanle 的 kubeconfig 复制到 node01 上</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl drain node01 --ignore-daemonsets
-</code></pre></div><ol start="3">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl drain node01 --ignore-daemonsets
+</span></span></code></pre></div><ol start="3">
 <li>执行节点升级命令</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo kubeadm upgrade node
-</code></pre></div><ol start="4">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo kubeadm upgrade node
+</span></span></code></pre></div><ol start="4">
 <li>节点升级成功后，继续升级 kubelet</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-mark unhold kubelet kubectl
-sudo apt-get install -y kubelet<span style="color:#f92672">=</span>1.19.0-00 kubectl<span style="color:#f92672">=</span>1.19.0-00
-sudo apt-mark hold kubelet kubectl
-</code></pre></div><ol start="5">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt-mark unhold kubelet kubectl
+</span></span><span style="display:flex;"><span>sudo apt-get install -y kubelet<span style="color:#f92672">=</span>1.19.0-00 kubectl<span style="color:#f92672">=</span>1.19.0-00
+</span></span><span style="display:flex;"><span>sudo apt-mark hold kubelet kubectl
+</span></span></code></pre></div><ol start="5">
 <li>重启 kubelet 服务</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo systemctl daemon-reload
-sudo systemctl restart kubelet
-</code></pre></div><ol start="6">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo systemctl daemon-reload
+</span></span><span style="display:flex;"><span>sudo systemctl restart kubelet
+</span></span></code></pre></div><ol start="6">
 <li>检查 node 状态，此时 node01 已经升级为 v1.19.0</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl get node
-</code></pre></div><ol start="7">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get node
+</span></span></code></pre></div><ol start="7">
 <li>执行 kubectl uncordon 命令，是其可以被调度</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl uncordon node01
-</code></pre></div><p>至此，整个集群安装与升级完成。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl uncordon node01
+</span></span></code></pre></div><p>至此，整个集群安装与升级完成。</p>
 <h2 id="真题解析">真题解析</h2>
 <p>Task</p>
 <p>Given an existing Kubernetes cluster running version 1.18.8, upgrade all fo the Kubernetes control plane and node components on the master node only to version 1.19.0</p>
@@ -303,16 +312,16 @@ sudo systemctl restart kubelet
 有考过 CKA 的朋友说只要不升级 工作节点即可。此处有疑问，仍需确认。</p>
 </blockquote>
 <p>执行过查看升级计划命令后，我们可以看到 CoreDNS 与 etcd 在升级范围内。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo kubeadm upgrade plan
-</code></pre></div><pre><code>COMPONENT CURRENT AVAILABLE
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo kubeadm upgrade plan
+</span></span></code></pre></div><pre tabindex="0"><code>COMPONENT CURRENT AVAILABLE
 kube-apiserver v1.18.1 v1.19.0
 kube-controller-manager v1.18.1 v1.19.0
 kube-scheduler v1.18.1 v1.19.0
 kube-proxy v1.18.1 v1.19.0
 CoreDNS 1.6.7 1.7.0
 etcd 3.4.3-0 3.4.9-1
-</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo kubeadm upgrade apply v1.19.0 --etcd-upgrade<span style="color:#f92672">=</span>false
-</code></pre></div><p>注意</p>
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo kubeadm upgrade apply v1.19.0 --etcd-upgrade<span style="color:#f92672">=</span>false
+</span></span></code></pre></div><p>注意</p>
 <h2 id="参考文档">参考文档</h2>
 <ul>
 <li><a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/">安装 Kubeadm</a></li>
@@ -337,7 +346,7 @@ etcd 3.4.3-0 3.4.9-1
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.774134934 &#43;0000 UTC m=&#43;0.178091491">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.116696674 &#43;0800 CST m=&#43;0.048843098">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

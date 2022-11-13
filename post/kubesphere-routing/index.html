@@ -12,13 +12,15 @@
 		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="favicon.ico" />
+		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
+
+		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
@@ -36,10 +38,17 @@
 			</div>
 		</nav>
 
+        <div id="darkModeToggle" onclick="toggleDarkMode()">
+  &#9680; 
+</div>
+
         
 
 <main>
-	<div class="post">
+	
+
+
+        <div class="post">
 		<div class="post-info">
     <span>Written by</span>
         
@@ -96,7 +105,7 @@
 <ol start="2">
 <li>完成项目 <code>sock-shop</code> 的创建后，我们接下来使用 <code>kubectl</code> 部署 SockShop 的相关服务。您可以使用本地的控制台或 KubeSphere web 工具箱中的 <code>kubectl</code>执行以下命令。</li>
 </ol>
-<pre><code>kubectl -n sock-shop apply -f https://github.com/microservices-demo/microservices-demo/raw/master/deploy/kubernetes/complete-demo.yaml
+<pre tabindex="0"><code>kubectl -n sock-shop apply -f https://github.com/microservices-demo/microservices-demo/raw/master/deploy/kubernetes/complete-demo.yaml
 </code></pre><p>执行过后可以进入 <code>sock-shop</code> 的<code>工作负载</code>页面查看部署的状态，等待所有的部署都正常运行后，我们再进行下一步操作。</p>
 <p><img src="https://kubesphere.com.cn/forum/assets/files/2021-07-27/1627371198-6886-workload.png" alt=""></p>
 <h3 id="项目网关配置">项目网关配置</h3>
@@ -123,7 +132,7 @@
 <p><img src="https://kubesphere.com.cn/forum/assets/files/2021-07-27/1627371262-490907-f12.png" alt=""></p>
 <p>该请求头中的 <code>X-Powered-By:Express</code> 表明了这条请求是由前端的 Nodejs 应用转发。</p>
 <ol start="4">
-<li>接下来，在 <code>frontend</code> 的详情页面点击左侧的<strong>更多操作</strong>，并选择<strong>编辑规则</strong>。在弹出的编辑规则页面，选择刚刚增加的规则，并点击左侧的编辑图标。新增一条路径，在路径、服务、端口上依次选择&rdquo;/catalogue&rdquo;、&ldquo;catalogue&rdquo;、&ldquo;80&rdquo;。保存该设置。编辑后的规则如下：</li>
+<li>接下来，在 <code>frontend</code> 的详情页面点击左侧的<strong>更多操作</strong>，并选择<strong>编辑规则</strong>。在弹出的编辑规则页面，选择刚刚增加的规则，并点击左侧的编辑图标。新增一条路径，在路径、服务、端口上依次选择&rdquo;/catalogue&quot;、&ldquo;catalogue&rdquo;、&ldquo;80&rdquo;。保存该设置。编辑后的规则如下：</li>
 </ol>
 <p><img src="https://kubesphere.com.cn/forum/assets/files/2021-07-27/1627371282-336585-router2.png" alt=""></p>
 <ol start="5">
@@ -150,7 +159,7 @@
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-01-25 03:13:03.776674478 &#43;0000 UTC m=&#43;0.180631046">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2022-11-13 17:10:40.108836059 &#43;0800 CST m=&#43;0.040982483">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 
