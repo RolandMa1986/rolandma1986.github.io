@@ -1,35 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
     <head>
-		
-		
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<title>Kubernetes 运维必知的内核参数和优化项 &middot; Roland&#39;s Blog</title>
 
 		
-		<link rel="stylesheet" href="/css/style.css">
+  		<link rel="stylesheet" href="/css/style.css">
 		<link rel="stylesheet" href="/css/fonts.css">
 		
-		<link rel="icon" href="/favicon.ico"/>
 		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 		<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
 		
 		<link href="" rel="alternate" type="application/rss+xml" title="Roland&#39;s Blog" />
-
-		<script src="/js/darkmode.js"></script>
 	</head>
 
     <body>
         		<nav class="nav">
 			<div class="nav-container">
 				<a href="/">
-					
-						<h2 class="nav-title">Roland&#39;s Blog</h2>
-					
+					<h2 class="nav-title">Roland&#39;s Blog</h2>
 				</a>
 				<ul>
     
@@ -38,17 +31,10 @@
 			</div>
 		</nav>
 
-        <div id="darkModeToggle" onclick="toggleDarkMode()">
-  &#9680; 
-</div>
-
         
 
 <main>
-	
-
-
-        <div class="post">
+	<div class="post">
 		<div class="post-info">
     <span>Written by</span>
         
@@ -68,7 +54,7 @@
 <li><code>kernel.pid_max = 32768</code> 配置决定了系统中可用的 PID 数量。进程 ID (PID) 是 Linux 内核的一项基础资源，内核会为每个进程或线程分配一个 PID。<code>pid_max</code> 的默认值一般是由内核编译项或 CPU 数量决定的，对于 64位系统内核代码中给出的计算方法如下：</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e"># https:</span><span style="color:#75715e">//github.com/torvalds/linux/blob/5147da902e0dd162c6254a61e4c57f21b60a9b1c/kernel/pid.c#L657
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>pid_max <span style="color:#f92672">=</span> min(<span style="color:#ae81ff">4194304</span>, max(<span style="color:#ae81ff">32768</span>, <span style="color:#ae81ff">1024</span> <span style="color:#f92672">*</span> (number of CPUs)))
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>pid_max <span style="color:#f92672">=</span> <span style="color:#a6e22e">min</span>(<span style="color:#ae81ff">4194304</span>, <span style="color:#a6e22e">max</span>(<span style="color:#ae81ff">32768</span>, <span style="color:#ae81ff">1024</span> <span style="color:#f92672">*</span> (number of CPUs)))
 </span></span></code></pre></div><p>以上表达式可以简单理解为，如果小于32核心则默认最大PID值为32768，超过32核心的则按1024* CPUs计算。因此，1024 也是内核推荐的每核心所调度的进程数量。</p>
 <p>在一个 Kebenetes 的工作节点即使调度了110个pod， 那么每个 Pod 也可以获得 200 多个 PID。这个限制对大多数应用通常是足够的。但 Kuberentes 集群中通常会存在资源超卖的情况，此时可以适当提高此设置。</p>
 <p>但在节点上应用 <code>pid_max</code> 设置时，并不能防范节点上 PID 资源耗尽问题。如果某 Pod 无限制的创建进程可能会导致节点运行不稳定。因此我们还需要启用 Kubernetes 中的另一个特性限制/预留 POD 的 PID 资源。Kubelet 中提供了 <code>--system-reserved</code>, <code>--kube-reserved</code>等参数，用以设置系统和 kubelet 所需要保留的 PID 数量用来保证节点上的程序可以正常运行调度。<code>--pod-max-pids</code> 用以限制 POD 最大可分配的 PID 数量。</p>
@@ -176,7 +162,7 @@
         		<footer>
 			
 			<span>
-			&copy; <time datetime="2022-11-13 17:10:40.10904251 &#43;0800 CST m=&#43;0.041188929">2022</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
+			&copy; <time datetime="2023-05-07 16:15:26.172435534 &#43;0800 CST m=&#43;0.164919462">2023</time> . Made with <a href='https://gohugo.io'>Hugo</a> using the <a href='https://github.com/EmielH/tale-hugo/'>Tale</a> theme.
 			</span>
 		</footer>
 

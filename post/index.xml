@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>This site is licensed under a [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Sat, 12 Nov 2022 14:15:42 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 01 May 2023 14:16:47 +0800</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>基于 Minimal Linux Live 构建自动刷镜像U盘</title>
+      <link>/post/minimal-linux-live/</link>
+      <pubDate>Mon, 01 May 2023 14:16:47 +0800</pubDate>
+      
+      <guid>/post/minimal-linux-live/</guid>
+      <description>&lt;p&gt;最近在生产一款采用 Linux 系统的 X86 架构工控机。工控机生产过程中，通常采用 Etcher 或其它烧录工具配合1拖N硬盘对拷机进行系统镜像烧录。然而，在客户现场升级或返厂维修时，如采用上述方法则需要将工控机拆机后烧录，过程较为繁琐。因此，急需一款类似 Ghost 的工具实现自动化刷机的工具及自启动U盘。在探索过程中，初步确定了基于 Minimal Linux Live，自定义 shell 脚本及系统镜像的自启动U盘刷镜像方案。&lt;/p&gt;
+&lt;p&gt;Minimal Linux Live(以下简称MLL)是一个非常小巧的教育性 Linux 发行版，它是通过一系列自动化 Shell 脚本从头构建的。MLL提供了一个包含 Linux 内核、GNU C 库和 Busybox 等工具的核心环境。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>eGalax Touch USB 触摸屏驱动触摸事件优化</title>
       <link>/post/touchscreen/</link>
